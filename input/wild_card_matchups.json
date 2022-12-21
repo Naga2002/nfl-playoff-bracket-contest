@@ -1,0 +1,86 @@
+[
+  {
+    "matchupname":"Wild Card 1",
+    "matchup":[
+      {
+        "matchuptype":"Wild Card"
+      },
+      {
+        "awayteam":"Miami Dolphins"
+      },
+      {
+        "hometeam":"Kansas City Chiefs"
+      }
+    ]
+  },
+  {
+    "matchupname":"Wild Card 2",
+    "matchup":[
+      {
+        "matchuptype":"Wild Card"
+      },
+      {
+        "awayteam":"LA Chargers"
+      },
+      {
+        "hometeam":"Cincinnati Bengals"
+      }
+    ]
+  },
+  {
+    "matchupname":"Wild Card 3",
+    "matchup":[
+      {
+        "matchuptype":"Wild Card"
+      },
+      {
+        "awayteam":"Baltimore Ravens"
+      },
+      {
+        "hometeam":"Tennessee Titans"
+      }
+    ]
+  },
+  {
+    "matchupname":"Wild Card 4",
+    "matchup":[
+      {
+        "matchuptype":"Wild Card"
+      },
+      {
+        "awayteam":"Washington Commanders"
+      },
+      {
+        "hometeam":"Minnesota Vikings"
+      }
+    ]
+  },
+  {
+    "matchupname":"Wild Card 5",
+    "matchup":[
+      {
+        "matchuptype":"Wild Card"
+      },
+      {
+        "awayteam":"NY Giants"
+      },
+      {
+        "hometeam":"San Francisco"
+      }
+    ]
+  },
+  {
+    "matchupname":"Wild Card 6",
+    "matchup":[
+      {
+        "matchuptype":"Wild Card"
+      },
+      {
+        "awayteam":"Dallas Cowboys"
+      },
+      {
+        "hometeam":"Tampa Bay Buccaneers"
+      }
+    ]
+  }
+]
