@@ -1,13 +1,14 @@
 """Module for entering and scoring NFL Playoff Brackets"""
-
+import pandas as pd
+import re
 
 class Bracket:
     """A bracket entry that has a list of matchup picks"""
 
     def __init__(self, entryname, tiebreaker, matchups):
         self._entryname = entryname
-        self._tiebreaker = tiebreaker
-        self._matchups = matchups
+        self._tiebreaker = tiebreaker # integer
+        self._matchups = matchups # dictionary with key as matchup type, value is matchup object
         self._totalpoints = 0
 
     def __str__(self):
@@ -246,7 +247,7 @@ def write_html_entries(entries_list):
     for entry in entries_list:
         html_rows += entry.entry_html_rows()
 
-    with open(r'V:\KMO\AAA for now\Personal_Area\Nate\Stuff\NFL Playoff Brackets\NFL_Brackets_2017.html',
+    with open(r'/Users/nathanmott/Documents/NFL  Playoff Brackets/NFL_Brackets_22-23.html',
               mode='wt', encoding='utf-8') as wf:
         wf.write(html_header)
         wf.write(html_rows)
@@ -294,539 +295,88 @@ def score_entries(actual_entry, entries_list):
                         entry.add_point_value(1)
 
 
-def create_entries():
-    # to make full color tracking - need to pass Matchup type as a param to Matchup()
-    actual = Bracket('Actual', 0,
-                     {"WildCard 1": Matchup('WildCard', 'Colts', 'Texans', 'Colts', 'x'),
-                      "WildCard 2": Matchup('WildCard', 'Chargers', 'Ravens', 'Ravens', 'x'),
-                      "WildCard 3": Matchup('WildCard', 'Vikings', 'Bears', 'Bears', 'x'),
-                      "WildCard 4": Matchup('WildCard', 'Seahawks', 'Cowboys', 'Seahawks', 'x'),
-                      "Divisional 1": Matchup('Divisional', 'Titans', 'Patriots', 'Patriots', 'Jaguars'),
-                      "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Jaguars', 'Patriots'),
-                      "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Eagles', 'Vikings'),
-                      "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Vikings', 'Eagles'),
-                      "Conference 1": Matchup('Conference', 'Jaguars', 'Patriots', 'Patriots', 'x'),
-                      "Conference 2": Matchup('Conference', 'Vikings', 'Eagles', 'Eagles', 'x'),
-                      "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Eagles', 'Eagles', 'x'), }
-                     )
+def create_bracket_from_sheet(bracket_row):
+    """ Takes a pandas Series object and returns a Bracket object
+    """
+    # build the matchups dictionary first
+    matchups = {}
+    matchups['WildCard 1'] = Matchup('WildCard', bracket_row['wildcard1-team_1'], bracket_row['wildcard1-team_2'],
+                                     bracket_row['wildcard1-winner'], 'x')
+    matchups['WildCard 2'] = Matchup('WildCard', bracket_row['wildcard2-team_1'], bracket_row['wildcard2-team_2'],
+                                     bracket_row['wildcard2-winner'], 'x')
+    matchups['WildCard 3'] = Matchup('WildCard', bracket_row['wildcard3-team_1'], bracket_row['wildcard3-team_2'],
+                                     bracket_row['wildcard3-winner'], 'x')
+    matchups['WildCard 4'] = Matchup('WildCard', bracket_row['wildcard4-team_1'], bracket_row['wildcard4-team_2'],
+                                     bracket_row['wildcard4-winner'], 'x')
+    matchups['WildCard 5'] = Matchup('WildCard', bracket_row['wildcard5-team_1'], bracket_row['wildcard5-team_2'],
+                                     bracket_row['wildcard5-winner'], 'x')
+    matchups['WildCard 6'] = Matchup('WildCard', bracket_row['wildcard6-team_1'], bracket_row['wildcard6-team_2'],
+                                     bracket_row['wildcard6-winner'], 'x')
+    matchups['Divisional 1'] = Matchup('Divisional', bracket_row['divisional1-team_1'], bracket_row['divisional1-team_2'],
+                                     bracket_row['divisional1-winner'], 'x')
+    matchups['Divisional 2'] = Matchup('Divisional', bracket_row['divisional2-team_1'], bracket_row['divisional2-team_2'],
+                                     bracket_row['divisional2-winner'], 'x')
+    matchups['Divisional 3'] = Matchup('Divisional', bracket_row['divisional3-team_1'], bracket_row['divisional3-team_2'],
+                                     bracket_row['divisional3-winner'], 'x')
+    matchups['Divisional 4'] = Matchup('Divisional', bracket_row['divisional4-team_1'], bracket_row['divisional4-team_2'],
+                                     bracket_row['divisional4-winner'], 'x')
 
-    entries_list = [
-        Bracket('Actual', 74,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Titans', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Jaguars', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Jaguars', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Vikings', 'Eagles', 'Eagles', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Eagles', 'Eagles', 'x'), }
-                ),
-        Bracket('Nathan Mott', 37,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Jaguars', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Falcons', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Jaguars', 'Patriots', 'Jaguars', 'x'),
-                 "Conference 2": Matchup('Conference', 'Falcons', 'Vikings', 'Vikings', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Jaguars', 'Vikings', 'Vikings', 'x'), }
-                ),
-        Bracket('Ashley Mott', 52,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Bills', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Bills', 'Patriots', 'Bills', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Titans', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Bills', 'Steelers', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Rams', 'Eagles', 'Rams', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Rams', 'Rams', 'x'), }
-                ),
-        Bracket('Vishu', 41,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Bills', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Panthers', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Bills', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Panthers', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Rams', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Vikings', 'Eagles', 'Vikings', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Vikings', 'Vikings', 'x'), }
-                ),
-        Bracket('Jo Pugliese', 37,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Jaguars', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Chiefs', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Vikings', 'Eagles', 'Eagles', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Eagles', 'Patriots', 'x'), }
-                ),
-        Bracket('Jo Pugliese (M)', 45,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Chiefs', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Saints', 'x'),
-                 "Conference 1": Matchup('Conference', 'Chiefs', 'Steelers', 'Chiefs', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Eagles', 'Eagles', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Chiefs', 'Eagles', 'Eagles', 'x'), }
-                ),
-        Bracket('Jo Pugliese (3)', 49,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Jaguars', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Chiefs', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Saints', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Vikings', 'Vikings', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Vikings', 'Vikings', 'x'), }
-                ),
-        Bracket('Lisa Maye', 52,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Falcons', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Falcons', 'Vikings', 'Vikings', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Vikings', 'Vikings', 'x'), }
-                ),
-        Bracket('Cannon Maye', 41,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Titans', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Saints', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Vikings', 'Vikings', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Vikings', 'Patriots', 'x'), }
-                ),
-        Bracket('Chase Maye', 60,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Panthers', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Panthers', 'Eagles', 'Panthers', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Panthers', 'Vikings', 'Panthers', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Panthers', 'Panthers', 'x'), }
-                ),
-        Bracket('Marc Maye', 48,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Panthers', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Titans', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Jaguars', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Falcons', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Panthers', 'Vikings', 'Panthers', 'x'),
-                 "Conference 1": Matchup('Conference', 'Jaguars', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Panthers', 'Falcons', 'Falcons', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Falcons', 'Patriots', 'x'), }
-                ),
-        Bracket('Amanda Ambrose', 53,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Chiefs', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Saints', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Rams', 'x'),
-                 "Conference 1": Matchup('Conference', 'Chiefs', 'Steelers', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Rams', 'Saints', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Saints', 'Saints', 'x'), }
-                ),
-        Bracket('Brandon Ambrose', 52,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Panthers', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Panthers', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Vikings', 'Eagles', 'Vikings', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Vikings', 'Vikings', 'x'), }
-                ),
-        Bracket('Brandon Ambrose (2)', 45,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Bills', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Panthers', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Bills', 'Patriots', 'Bills', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Titans', 'Steelers', 'Titans', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Falcons', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Panthers', 'Vikings', 'Panthers', 'x'),
-                 "Conference 1": Matchup('Conference', 'Bills', 'Titans', 'Bills', 'x'),
-                 "Conference 2": Matchup('Conference', 'Falcons', 'Panthers', 'Falcons', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Bills', 'Falcons', 'Bills', 'x'), }
-                ),
-        Bracket('Becky Grim', 42,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Bills', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Bills', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Titans', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Saints', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Eagles', 'Eagles', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Eagles', 'Steelers', 'x'), }
-                ),
-        Bracket('Missi Miller', 36,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Saints', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Rams', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Rams', 'Rams', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Rams', 'Patriots', 'x'), }
-                ),
-        Bracket('Kayla', 42,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Saints', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Rams', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Rams', 'Rams', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Rams', 'Steelers', 'x'), }
-                ),
-        Bracket('Kayla (2)', 42,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Vikings', 'Eagles', 'Eagles', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Eagles', 'Steelers', 'x'), }
-                ),
-        Bracket('Mark Randolph', 46,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Vikings', 'Eagles', 'Vikings', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Vikings', 'Vikings', 'x'), }
-                ),
-        Bracket('Cameron Randolph', 45,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Titans', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Saints', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Vikings', 'Saints', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Saints', 'Saints', 'x'), }
-                ),
-        Bracket('Karlo', 68,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Saints', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Vikings', 'Vikings', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Vikings', 'Vikings', 'x'), }
-                ),
-        Bracket('Karlo (2)', 72,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Bills', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Bills', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Chiefs', 'Steelers', 'Chiefs', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Saints', 'x'),
-                 "Conference 1": Matchup('Conference', 'Chiefs', 'Patriots', 'Chiefs', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Eagles', 'Saints', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Chiefs', 'Saints', 'Chiefs', 'x'), }
-                ),
-        Bracket('Joy Grubb', 44,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Bills', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Bills', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Titans', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Saints', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Rams', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Rams', 'Rams', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Rams', 'Steelers', 'x'), }
-                ),
-        Bracket('Aaron C', 66,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Saints', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Rams', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Rams', 'Rams', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Rams', 'Patriots', 'x'), }
-                ),
-        Bracket('Jes Cornbower', 60,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Panthers', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Titans', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Jaguars', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Panthers', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Jaguars', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Vikings', 'Eagles', 'Vikings', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Vikings', 'Patriots', 'x'), }
-                ),
-        Bracket('Heather Laskowich', 64,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Falcons', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Saints', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Falcons', 'Saints', 'Saints', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Saints', 'Patriots', 'x'), }
-                ),
-        Bracket('Cindy Smith', 24,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Bills', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Panthers', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Bills', 'Patriots', 'Bills', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Chiefs', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Panthers', 'Eagles', 'Panthers', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Rams', 'x'),
-                 "Conference 1": Matchup('Conference', 'Bills', 'Steelers', 'Bills', 'x'),
-                 "Conference 2": Matchup('Conference', 'Panthers', 'Rams', 'Rams', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Rams', 'Steelers', 'x'), }
-                ),
-        Bracket('Cindy Smith (2)', 31,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Vikings', 'Eagles', 'Vikings', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Vikings', 'Steelers', 'x'), }
-                ),
-        Bracket('Terri Krebs', 53,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Jaguars', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Chiefs', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Rams', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Saints', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Eagles', 'Eagles', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Eagles', 'Patriots', 'x'), }
-                ),
-        Bracket('Brian Cook', 61,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Chiefs', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Saints', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Rams', 'x'),
-                 "Conference 1": Matchup('Conference', 'Chiefs', 'Steelers', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Rams', 'Saints', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Saints', 'Steelers', 'x'), }
-                ),
-        Bracket('Mandy Cook', 49,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Titans', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Vikings', 'Eagles', 'Eagles', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Eagles', 'Steelers', 'x'), }
-                ),
-        Bracket('Stef Martin', 41,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Panthers', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Jaguars', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Panthers', 'Eagles', 'Panthers', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Jaguars', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Panthers', 'Vikings', 'Vikings', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Vikings', 'Vikings', 'x'), }
-                ),
-        Bracket('Stef Martin (2)', 37,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Panthers', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Jaguars', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Titans', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Panthers', 'Eagles', 'Panthers', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Rams', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Panthers', 'Rams', 'Rams', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', 'Rams', 'Patriots', 'x'), }
-                ),
-        Bracket('Kim R', 43,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Panthers', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Jaguars', 'Patriots', 'Jaguars', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Titans', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Rams', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Panthers', 'Vikings', 'Panthers', 'x'),
-                 "Conference 1": Matchup('Conference', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Panthers', 'Eagles', 'Panthers', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Panthers', '', 'x'), }
-                ),
-        Bracket('Kim R (2)', 45,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Jaguars', 'Patriots', '', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Chiefs', 'Steelers', 'Chiefs', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Rams', 'Eagles', 'Rams', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Saints', 'x'),
-                 "Conference 1": Matchup('Conference', 'Chiefs', '', 'Chiefs', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Rams', 'Saints', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Chiefs', 'Saints', 'Chiefs', 'x'), }
-                ),
-        Bracket('Kim R (3)', 38,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Titans', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Panthers', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Jaguars', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Titans', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Rams', 'Eagles', 'Rams', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Panthers', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Patriots', 'x'),
-                 "Conference 2": Matchup('Conference', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Patriots', '', '', 'x'), }
-                ),
-        Bracket('Kim R (4)', 45,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Jaguars', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Chiefs', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Rams', 'Eagles', 'Eagles', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Saints', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Eagles', 'Eagles', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Eagles', 'Eagles', 'x'), }
-                ),
-        Bracket('Jo Pugliese (4)', 47,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Rams', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Saints', 'Eagles', 'Saints', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Rams', 'Vikings', 'Vikings', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Saints', 'Vikings', 'Saints', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Saints', 'Steelers', 'x'), }
-                ),
-        Bracket('Klay', 59,
-                {"WildCard 1": Matchup('WildCard', 'Bills', 'Jaguars', 'Jaguars', 'x'),
-                 "WildCard 2": Matchup('WildCard', 'Titans', 'Chiefs', 'Chiefs', 'x'),
-                 "WildCard 3": Matchup('WildCard', 'Falcons', 'Rams', 'Falcons', 'x'),
-                 "WildCard 4": Matchup('WildCard', 'Panthers', 'Saints', 'Saints', 'x'),
-                 "Divisional 1": Matchup('Divisional', 'Chiefs', 'Patriots', 'Patriots', 'x'),
-                 "Divisional 2": Matchup('Divisional', 'Jaguars', 'Steelers', 'Steelers', 'x'),
-                 "Divisional 3": Matchup('Divisional', 'Falcons', 'Eagles', 'Falcons', 'x'),
-                 "Divisional 4": Matchup('Divisional', 'Saints', 'Vikings', 'Saints', 'x'),
-                 "Conference 1": Matchup('Conference', 'Steelers', 'Patriots', 'Steelers', 'x'),
-                 "Conference 2": Matchup('Conference', 'Falcons', 'Saints', 'Saints', 'x'),
-                 "Super Bowl": Matchup('Super Bowl', 'Steelers', 'Saints', 'Steelers', 'x'), }
-                ), ]
+    bracket = Bracket(bracket_row['email_address'],bracket_row['tie_breaker_points'], matchups)
+    return bracket
 
-    return actual, entries_list
 
+def read_entries_sheet():
+    """ reads Google sheet that has links to other Google sheets - each one an entry bracket
+
+        Returns a list of entry brackets
+    """
+    entries = []
+    sheet_id = '10AsqEXEEziW_oCshbEcBQJ0OEVOTigsGmWlPk59T7Ko'
+    sheet_name = 'Entries'
+    url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
+    df = pd.read_csv(url)
+
+    index = 0
+    while index <= len(df)-1:
+        """ loop through each entry and go the bracket link to retrieve bracket data """
+        entry_row = df.iloc[index]
+        entry_name = entry_row['email_address']
+        sheet_link = entry_row['sheet_link']
+        sheet_id = re.search(r'\/d\/([^\/]*)', sheet_link).group(1)
+        sheet_name = 'Data'
+
+        url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
+        df2 = pd.read_csv(url)
+        bracket_row = df2.iloc[0]
+
+        bracket = create_bracket_from_sheet(bracket_row)
+        entries.append(bracket)
+
+        index += 1
+
+    return entries
+
+def get_actual():
+    """ reads Google sheet that is my "actual bracket" - updated after game outcomes each round
+
+        Returns a single bracket named "actual"
+    """
+    sheet_id = '1iZylS_IDxUzvdqAIrjOr5exaP_VK-HFGWMtljBq4GXE'
+    sheet_name = 'Data'
+    url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
+    df = pd.read_csv(url)
+    bracket_row = df.iloc[0]
+    actual = create_bracket_from_sheet(bracket_row)
+
+    return actual
 
 def main():
-    a, e = create_entries()
-    score_entries(a, e)
-    # print_entries(e)
-    write_html_entries(e)
+    # e = read_entries_sheet()
+    a = get_actual()
+    print(a)
+    # score_entries(a, e)
+    # print_entries(a)
+    # write_html_entries(e)
 
 
 if __name__ == '__main__':

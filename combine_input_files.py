@@ -28,11 +28,12 @@ json_data = {}
 for row in form_data:
     bracket_entry = {}
     entryname = row[1]
+    tiebreaker = row[-1]
     index = 2
     previous_matchup_name = ''
     print(entryname)
 
-    while index < len(row):
+    while index < len(row)-1:
         header_split = header[index].split(' - ')
         matchup_name = header_split[0]  # e.g. 'Wild Card 1'
         value_type = header_split[1]  # e.g. 'Winner Selection'
