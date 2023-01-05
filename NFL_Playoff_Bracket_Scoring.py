@@ -77,17 +77,32 @@ class Bracket:
                                 self._matchups["Divisional 4"].home_team_html(),
                                 self._matchups["Divisional 4"].point_value(),
                                 )
-        return row1 + row2 + row3 + row4
+        row5 = """
+                <tr>
+                <td></td><td></td><td></td>{0}{1}{2}<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                </tr>""".format(self._matchups["WildCard 5"].away_team_html(),
+                                self._matchups["WildCard 5"].home_team_html(),
+                                self._matchups["WildCard 5"].point_value(),
+                                )
+        row6 = """
+                <tr>
+                <td></td><td></td><td></td>{0}{1}{2}<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                </tr>""".format(self._matchups["WildCard 6"].away_team_html(),
+                                self._matchups["WildCard 6"].home_team_html(),
+                                self._matchups["WildCard 6"].point_value(),
+                                )
+
+        return row1 + row2 + row3 + row4 + row5 + row6
 
 
 class Matchup:
     """A game played between two NFL teams"""
     def __init__(self, matchuptype, awayteam, hometeam, winningteam, altwinningteam):
-        self._matchuptype = matchuptype
-        self._awayteam = awayteam
-        self._hometeam = hometeam
-        self._winningteam = winningteam
-        self._altwinningteam = altwinningteam
+        self._matchuptype = str(matchuptype)
+        self._awayteam = str(awayteam)
+        self._hometeam = str(hometeam)
+        self._winningteam = str(winningteam)
+        self._altwinningteam = str(altwinningteam)
         self._pointvalue = 0
         self._matchuppoints = 0
         self._winningteampoints = 0
@@ -247,7 +262,7 @@ def write_html_entries(entries_list):
     for entry in entries_list:
         html_rows += entry.entry_html_rows()
 
-    with open(r'/Users/nathanmott/Documents/NFL  Playoff Brackets/NFL_Brackets_22-23.html',
+    with open(r'/Users/nathanmott/workspaces/nmott/nfl-playoff-bracket-contest/output/NFL_Brackets_22-23.html',
               mode='wt', encoding='utf-8') as wf:
         wf.write(html_header)
         wf.write(html_rows)
@@ -320,6 +335,12 @@ def create_bracket_from_sheet(bracket_row):
                                      bracket_row['divisional3-winner'], 'x')
     matchups['Divisional 4'] = Matchup('Divisional', bracket_row['divisional4-team_1'], bracket_row['divisional4-team_2'],
                                      bracket_row['divisional4-winner'], 'x')
+    matchups['Conference 1'] = Matchup('Conference', bracket_row['conference1-team_1'], bracket_row['conference1-team_2'],
+                                     bracket_row['conference1-winner'], 'x')
+    matchups['Conference 2'] = Matchup('Conference', bracket_row['conference2-team_1'], bracket_row['conference2-team_2'],
+                                     bracket_row['conference2-winner'], 'x')
+    matchups['Super Bowl'] = Matchup('Super Bowl', bracket_row['superbowl-team_1'], bracket_row['superbowl-team_2'],
+                                     bracket_row['superbowl-winner'], 'x')
 
     bracket = Bracket(bracket_row['email_address'],bracket_row['tie_breaker_points'], matchups)
     return bracket
@@ -361,7 +382,7 @@ def get_actual():
 
         Returns a single bracket named "actual"
     """
-    sheet_id = '1iZylS_IDxUzvdqAIrjOr5exaP_VK-HFGWMtljBq4GXE'
+    sheet_id = '1GjPKKp4rt7QKxwuYPAfgoXNgRhjNB4Zq0xM_Aka_nDs'
     sheet_name = 'Data'
     url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
     df = pd.read_csv(url)
@@ -371,12 +392,12 @@ def get_actual():
     return actual
 
 def main():
-    # e = read_entries_sheet()
+    e = read_entries_sheet()
     a = get_actual()
-    print(a)
-    # score_entries(a, e)
+    # print(a)
+    score_entries(a, e)
     # print_entries(a)
-    # write_html_entries(e)
+    write_html_entries(e)
 
 
 if __name__ == '__main__':
