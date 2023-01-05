@@ -262,7 +262,7 @@ def write_html_entries(entries_list):
     for entry in entries_list:
         html_rows += entry.entry_html_rows()
 
-    with open(r'/Users/nathanmott/workspaces/nmott/nfl-playoff-bracket-contest/output/NFL_Brackets_22-23.html',
+    with open(r'/Users/nathanmott/workspaces/nmott/nfl-playoff-bracket-contest/output/index.html',
               mode='wt', encoding='utf-8') as wf:
         wf.write(html_header)
         wf.write(html_rows)
