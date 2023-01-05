@@ -248,7 +248,7 @@ def write_html_entries(entries_list):
       <body>
      <table border=1>
           <tr>
-          <th>Name</th><th>Final Points</th><th>Tie Brk</th><th colspan="2">WildCard Matchups</th><th>Pts</th>
+          <th>Name</th><th>Final Points</th><th>Tiebrk</th><th colspan="2">WildCard Matchups</th><th>Pts</th>
           <th colspan="2">Divisional Matchups</th><th>Pts</th><th colspan="2">Conference Matchups</th><th>Pts</th>
           <th colspan="2">Super Bowl</th><th>Pts</th>         
           </tr>"""
@@ -263,6 +263,7 @@ def write_html_entries(entries_list):
         html_rows += entry.entry_html_rows()
 
     with open(r'/Users/nathanmott/workspaces/nmott/nfl-playoff-bracket-contest/docs/index.html',
+#     with open(r'/Users/nathanmott/Documents/NFL  Playoff Brackets/NFL_Brackets_22-23.html',
               mode='wt', encoding='utf-8') as wf:
         wf.write(html_header)
         wf.write(html_rows)
@@ -382,7 +383,7 @@ def get_actual():
 
         Returns a single bracket named "actual"
     """
-    sheet_id = '1GjPKKp4rt7QKxwuYPAfgoXNgRhjNB4Zq0xM_Aka_nDs'
+    sheet_id = '1ic4USuf5gXc9ydX6TlCdmYX3Tnat-7i1XzJG0y6WeAE'
     sheet_name = 'Data'
     url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
     df = pd.read_csv(url)
@@ -395,7 +396,7 @@ def main():
     e = read_entries_sheet()
     a = get_actual()
     # print(a)
-    score_entries(a, e)
+    # score_entries(a, e)
     # print_entries(a)
     write_html_entries(e)
 
