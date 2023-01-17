@@ -263,7 +263,7 @@ def write_html_entries(entries_list):
         html_rows += entry.entry_html_rows()
 
     with open(r'/Users/nathanmott/workspaces/nmott/nfl-playoff-bracket-contest/docs/index.html',
-#     with open(r'/Users/nathanmott/Documents/NFL  Playoff Brackets/NFL_Brackets_22-23.html',
+#     with open(r'/Users/nathanmott/Documents/NFL  Playoff Brackets/NFL_Brackets_22-23-scoringtest.html',
               mode='wt', encoding='utf-8') as wf:
         wf.write(html_header)
         wf.write(html_rows)
@@ -289,17 +289,18 @@ def score_entries(actual_entry, entries_list):
             entry_matchup = entry.matchups()[matchup_type]
             actual_matchup = actual_matchups[matchup_type]
 
-            if actual_matchup.winning_team() != 'x':
+            if actual_matchup.winning_team() != 'nan':
                 entry_matchup.set_winning_scored_y()
 
-            if entry_matchup.winning_team() == actual_matchup.winning_team() or \
-                    entry_matchup.winning_team() == actual_matchup.alt_winning_team():
+            if (entry_matchup.winning_team() == actual_matchup.winning_team() or \
+                    entry_matchup.winning_team() == actual_matchup.alt_winning_team()) \
+                    and actual_matchup.winning_team() != 'nan':
                 bool_point_increased = entry_matchup.add_winning_point_value(1)
                 if bool_point_increased == 1:
                     entry.add_point_value(1)
 
             if not matchup_type.startswith("WildCard"):
-                if actual_matchup.away_team() != 'x':
+                if actual_matchup.away_team() != 'nan':
                     entry_matchup.set_matchup_scored_y()
 
                 entry_team_list = [entry_matchup.away_team(), entry_matchup.home_team()]
@@ -388,7 +389,36 @@ def get_actual():
     url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
     df = pd.read_csv(url)
     bracket_row = df.iloc[0]
-    actual = create_bracket_from_sheet(bracket_row)
+
+    matchups = {}
+    matchups['WildCard 1'] = Matchup('WildCard', bracket_row['wildcard1-team_1'], bracket_row['wildcard1-team_2'],
+                                     bracket_row['wildcard1-winner'], 'x')
+    matchups['WildCard 2'] = Matchup('WildCard', bracket_row['wildcard2-team_1'], bracket_row['wildcard2-team_2'],
+                                     bracket_row['wildcard2-winner'], 'x')
+    matchups['WildCard 3'] = Matchup('WildCard', bracket_row['wildcard3-team_1'], bracket_row['wildcard3-team_2'],
+                                     bracket_row['wildcard3-winner'], 'x')
+    matchups['WildCard 4'] = Matchup('WildCard', bracket_row['wildcard4-team_1'], bracket_row['wildcard4-team_2'],
+                                     bracket_row['wildcard4-winner'], 'x')
+    matchups['WildCard 5'] = Matchup('WildCard', bracket_row['wildcard5-team_1'], bracket_row['wildcard5-team_2'],
+                                     bracket_row['wildcard5-winner'], 'x')
+    matchups['WildCard 6'] = Matchup('WildCard', bracket_row['wildcard6-team_1'], bracket_row['wildcard6-team_2'],
+                                     bracket_row['wildcard6-winner'], 'x')
+    matchups['Divisional 1'] = Matchup('Divisional', bracket_row['divisional1-team_1'], bracket_row['divisional1-team_2'],
+                                     bracket_row['divisional1-winner'], bracket_row['divisional2-winner'])
+    matchups['Divisional 2'] = Matchup('Divisional', bracket_row['divisional2-team_1'], bracket_row['divisional2-team_2'],
+                                     bracket_row['divisional2-winner'], bracket_row['divisional1-winner'])
+    matchups['Divisional 3'] = Matchup('Divisional', bracket_row['divisional3-team_1'], bracket_row['divisional3-team_2'],
+                                     bracket_row['divisional3-winner'], bracket_row['divisional4-winner'])
+    matchups['Divisional 4'] = Matchup('Divisional', bracket_row['divisional4-team_1'], bracket_row['divisional4-team_2'],
+                                     bracket_row['divisional4-winner'], bracket_row['divisional3-winner'])
+    matchups['Conference 1'] = Matchup('Conference', bracket_row['conference1-team_1'], bracket_row['conference1-team_2'],
+                                     bracket_row['conference1-winner'], bracket_row['conference2-winner'])
+    matchups['Conference 2'] = Matchup('Conference', bracket_row['conference2-team_1'], bracket_row['conference2-team_2'],
+                                     bracket_row['conference2-winner'], bracket_row['conference1-winner'])
+    matchups['Super Bowl'] = Matchup('Super Bowl', bracket_row['superbowl-team_1'], bracket_row['superbowl-team_2'],
+                                     bracket_row['superbowl-winner'], 'x')
+
+    actual = Bracket(bracket_row['email_address'],bracket_row['tie_breaker_points'], matchups)
 
     return actual
 
