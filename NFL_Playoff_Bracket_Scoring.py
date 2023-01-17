@@ -383,7 +383,7 @@ def get_actual():
 
         Returns a single bracket named "actual"
     """
-    sheet_id = '1ic4USuf5gXc9ydX6TlCdmYX3Tnat-7i1XzJG0y6WeAE'
+    sheet_id = '17yVLdSgMs2fKbTOeq6XwSki29J4T6cD431UWVAvhnws'
     sheet_name = 'Data'
     url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
     df = pd.read_csv(url)
@@ -394,9 +394,9 @@ def get_actual():
 
 def main():
     e = read_entries_sheet()
-#     a = get_actual()
+    a = get_actual()
     # print(a)
-    # score_entries(a, e)
+    score_entries(a, e)
     # print_entries(a)
     write_html_entries(e)
 
