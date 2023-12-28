@@ -8,6 +8,7 @@ def read_entries_sheet():
     url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
     df = pd.read_csv(url)
 
+    final_entries_df = pd.DataFrame([])
     index = 0
     while index <= len(df)-1:
         """ loop through each entry and go the bracket link to retrieve bracket data """
@@ -18,13 +19,15 @@ def read_entries_sheet():
         sheet_name = 'Data'
 
         url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
-        df2 = pd.read_csv(url)
-        bracket_row = df2.iloc[0]
+        single_entry_df = pd.read_csv(url)
+        # bracket_row = df2.iloc[0]
 
-        print(bracket_row['wildcard1-team_1'], bracket_row['wildcard1-winner'], bracket_row['tie_breaker_points'])
-
+        # print(bracket_row['email_address'], bracket_row['wildcard1-winner'], bracket_row['tie_breaker_points'])
+        final_entries_df = pd.concat([final_entries_df, single_entry_df])
 
         index += 1
+    
+    print(final_entries_df)
 
 def main():
     read_entries_sheet()
