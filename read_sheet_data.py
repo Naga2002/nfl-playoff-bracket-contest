@@ -1,6 +1,8 @@
 import pandas as pd
 import re
+import streamlit as st
 
+@st.cache_data
 def read_entries_sheet():
     """ reads Google sheet that has links to other Google sheets - each one an entry bracket """
     sheet_id = '10AsqEXEEziW_oCshbEcBQJ0OEVOTigsGmWlPk59T7Ko'
@@ -11,7 +13,7 @@ def read_entries_sheet():
     final_entries_df = pd.DataFrame([])
     index = 0
     while index <= len(df)-1:
-        """ loop through each entry and go the bracket link to retrieve bracket data """
+        # loop through each entry and go the bracket link to retrieve bracket data
         entry_row = df.iloc[index]
         entry_name = entry_row['email_address']
         sheet_link = entry_row['sheet_link']
@@ -27,10 +29,26 @@ def read_entries_sheet():
 
         index += 1
     
-    print(final_entries_df)
+    # print(final_entries_df)
+    return final_entries_df
 
 def main():
-    read_entries_sheet()
+    # Create a text element and let the reader know the data is loading.
+    data_load_state = st.text('Loading data...')
+    # Read Google sheets of entry data
+    entries_data = read_entries_sheet()
+    # Notify the reader that the data was successfully loaded.
+    data_load_state.text('Loading data...done!')
+
+    superbowl_picks = entries_data.select('superbowl-winner')groupby(['superbowl-winner'])
+
+    print(superbowl_picks)
+
+    # st.subheader('Raw data')
+    # st.write(entries_data)
+
+ 
+    
 
 if __name__ == '__main__':
     main()

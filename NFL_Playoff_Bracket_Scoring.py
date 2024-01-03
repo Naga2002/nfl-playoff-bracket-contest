@@ -344,7 +344,7 @@ def create_bracket_from_sheet(bracket_row):
     matchups['Super Bowl'] = Matchup('Super Bowl', bracket_row['superbowl-team_1'], bracket_row['superbowl-team_2'],
                                      bracket_row['superbowl-winner'], 'x')
 
-    bracket = Bracket(bracket_row['email_address'],bracket_row['tie_breaker_points'], matchups)
+    bracket = Bracket(bracket_row['name'],bracket_row['tie_breaker_points'], matchups)
     return bracket
 
 
@@ -418,7 +418,7 @@ def get_actual():
     matchups['Super Bowl'] = Matchup('Super Bowl', bracket_row['superbowl-team_1'], bracket_row['superbowl-team_2'],
                                      bracket_row['superbowl-winner'], 'x')
 
-    actual = Bracket(bracket_row['email_address'],bracket_row['tie_breaker_points'], matchups)
+    actual = Bracket(bracket_row['name'],bracket_row['tie_breaker_points'], matchups)
 
     return actual
 
