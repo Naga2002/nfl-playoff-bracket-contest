@@ -1,8 +1,8 @@
 import pandas as pd
 import re
-import streamlit as st
+# import streamlit as st
 
-@st.cache_data
+# @st.cache_data
 def read_entries_sheet():
     """ reads Google sheet that has links to other Google sheets - each one an entry bracket """
     sheet_id = '10AsqEXEEziW_oCshbEcBQJ0OEVOTigsGmWlPk59T7Ko'
@@ -29,20 +29,22 @@ def read_entries_sheet():
 
         index += 1
     
-    # print(final_entries_df)
+    print(final_entries_df)
     return final_entries_df
 
 def main():
     # Create a text element and let the reader know the data is loading.
-    data_load_state = st.text('Loading data...')
+    # data_load_state = st.text('Loading data...')
     # Read Google sheets of entry data
-    entries_data = read_entries_sheet()
+    # entries_data = read_entries_sheet()
     # Notify the reader that the data was successfully loaded.
-    data_load_state.text('Loading data...done!')
+    # data_load_state.text('Loading data...done!')
 
-    superbowl_picks = entries_data.select('superbowl-winner')groupby(['superbowl-winner'])
+    # superbowl_picks = entries_data.select('superbowl-winner')groupby(['superbowl-winner'])
 
-    print(superbowl_picks)
+    # print(superbowl_picks)
+
+    # entries_data.to_csv('output/2023_entries_data.csv')
 
     # st.subheader('Raw data')
     # st.write(entries_data)

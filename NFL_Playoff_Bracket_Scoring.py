@@ -424,9 +424,9 @@ def get_actual():
 
 def main():
     e = read_entries_sheet()
-    a = get_actual()
+    # a = get_actual()
     # print(a)
-    score_entries(a, e)
+    # score_entries(a, e)
     # print_entries(a)
     write_html_entries(e)
 
