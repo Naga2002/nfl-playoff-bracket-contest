@@ -262,7 +262,7 @@ def write_html_entries(entries_list):
     for entry in entries_list:
         html_rows += entry.entry_html_rows()
 
-    with open(r'/Users/nathanmott/workspaces/nmott/nfl-playoff-bracket-contest/docs/index.html',
+    with open(r'/Users/nmott/workspaces/nmott/nfl-playoff-bracket-contest/docs/index.html',
     # with open(r'/Users/nathanmott/Documents/NFL  Playoff Brackets/NFL_Brackets_22-23-scoringtest.html',
               mode='wt', encoding='utf-8') as wf:
         wf.write(html_header)
@@ -354,7 +354,7 @@ def read_entries_sheet():
         Returns a list of entry brackets
     """
     entries = []
-    sheet_id = '10AsqEXEEziW_oCshbEcBQJ0OEVOTigsGmWlPk59T7Ko'
+    sheet_id = '1KBk8eBUA5bfnOLxF20X9eS1xIqjAsSFF6xWuv2oTAas'
     sheet_name = 'Entries'
     url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
     df = pd.read_csv(url)

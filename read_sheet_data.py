@@ -3,9 +3,11 @@ import re
 # import streamlit as st
 
 # @st.cache_data
+#https://docs.google.com/spreadsheets/d/1KBk8eBUA5bfnOLxF20X9eS1xIqjAsSFF6xWuv2oTAas/edit?usp=sharing
 def read_entries_sheet():
     """ reads Google sheet that has links to other Google sheets - each one an entry bracket """
-    sheet_id = '10AsqEXEEziW_oCshbEcBQJ0OEVOTigsGmWlPk59T7Ko'
+    # sheet_id = '10AsqEXEEziW_oCshbEcBQJ0OEVOTigsGmWlPk59T7Ko'
+    sheet_id = '1KBk8eBUA5bfnOLxF20X9eS1xIqjAsSFF6xWuv2oTAas'
     sheet_name = 'Entries'
     url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
     df = pd.read_csv(url)
@@ -36,7 +38,7 @@ def main():
     # Create a text element and let the reader know the data is loading.
     # data_load_state = st.text('Loading data...')
     # Read Google sheets of entry data
-    # entries_data = read_entries_sheet()
+    entries_data = read_entries_sheet()
     # Notify the reader that the data was successfully loaded.
     # data_load_state.text('Loading data...done!')
 
@@ -44,7 +46,7 @@ def main():
 
     # print(superbowl_picks)
 
-    # entries_data.to_csv('output/2023_entries_data.csv')
+    entries_data.to_csv('output/2024_entries_data.csv')
 
     # st.subheader('Raw data')
     # st.write(entries_data)
