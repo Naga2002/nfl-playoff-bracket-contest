@@ -262,7 +262,7 @@ def write_html_entries(entries_list):
     for entry in entries_list:
         html_rows += entry.entry_html_rows()
 
-    with open(r'/Users/nathanmott/workspaces/nmott/nfl-playoff-bracket-contest/docs/index.html',
+    with open(r'/Users/nmott/workspaces/nmott/nfl-playoff-bracket-contest/docs/index.html',
     # with open(r'/Users/nathanmott/Documents/NFL  Playoff Brackets/NFL_Brackets_22-23-scoringtest.html',
               mode='wt', encoding='utf-8') as wf:
         wf.write(html_header)
@@ -344,7 +344,7 @@ def create_bracket_from_sheet(bracket_row):
     matchups['Super Bowl'] = Matchup('Super Bowl', bracket_row['superbowl-team_1'], bracket_row['superbowl-team_2'],
                                      bracket_row['superbowl-winner'], 'x')
 
-    bracket = Bracket(bracket_row['email_address'],bracket_row['tie_breaker_points'], matchups)
+    bracket = Bracket(bracket_row['name'],bracket_row['tie_breaker_points'], matchups)
     return bracket
 
 
@@ -354,7 +354,7 @@ def read_entries_sheet():
         Returns a list of entry brackets
     """
     entries = []
-    sheet_id = '10AsqEXEEziW_oCshbEcBQJ0OEVOTigsGmWlPk59T7Ko'
+    sheet_id = '1KBk8eBUA5bfnOLxF20X9eS1xIqjAsSFF6xWuv2oTAas'
     sheet_name = 'Entries'
     url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
     df = pd.read_csv(url)
@@ -418,15 +418,15 @@ def get_actual():
     matchups['Super Bowl'] = Matchup('Super Bowl', bracket_row['superbowl-team_1'], bracket_row['superbowl-team_2'],
                                      bracket_row['superbowl-winner'], 'x')
 
-    actual = Bracket(bracket_row['email_address'],bracket_row['tie_breaker_points'], matchups)
+    actual = Bracket(bracket_row['name'],bracket_row['tie_breaker_points'], matchups)
 
     return actual
 
 def main():
     e = read_entries_sheet()
-    a = get_actual()
+    # a = get_actual()
     # print(a)
-    score_entries(a, e)
+    # score_entries(a, e)
     # print_entries(a)
     write_html_entries(e)
 
