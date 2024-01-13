@@ -22,7 +22,7 @@ def main():
     print(superbowl_picks)
 
     fig = px.bar(superbowl_picks, x='count', y='superbowl-winner', text='percent', color='superbowl-winner'
-                 ,title='Super Bowl', orientation='h')
+                 ,title='Super Bowl Winners', orientation='h')
 
     # st.write(fig)
     st.plotly_chart(fig, use_container_width=True)
