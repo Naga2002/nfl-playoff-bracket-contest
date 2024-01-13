@@ -3,10 +3,7 @@ import re
 import streamlit as st
 import plotly.express as px
 
-def main():
-    # Read saved bracket data from csv
-    entries_data = pd.read_csv('output/2024_entries_data.csv')
-
+def build_superbowl_picks_df(entries_data):
     # build superbowl winner picks dataframe for plotting
     superbowl_picks = entries_data.groupby(['superbowl-winner'])['superbowl-winner'].count().reset_index(name='count')
     total_entries=superbowl_picks['count'].sum()
@@ -18,22 +15,19 @@ def main():
     # convert percent to string and add '%' symbol for displaying
     superbowl_picks['percent'] = superbowl_picks['percent'].astype(str) + '%'
 
+    return superbowl_picks
 
-    print(superbowl_picks)
+def main():
+    # Read saved bracket data from csv
+    entries_data = pd.read_csv('output/2024_entries_data.csv')
 
-    fig = px.bar(superbowl_picks, x='count', y='superbowl-winner', text='percent', color='superbowl-winner'
+    superbowl_picks = build_superbowl_picks_df(entries_data)
+
+    superbowl_picks_fig = px.bar(superbowl_picks, x='count', y='superbowl-winner', text='percent', color='superbowl-winner'
                  ,title='Super Bowl Winners', orientation='h')
 
-    # st.write(fig)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(superbowl_picks_fig, use_container_width=True)
 
-    # st.subheader('Raw data')
-    # st.write(entries_data)
-
-    
-
- 
-    
 
 if __name__ == '__main__':
     main()
