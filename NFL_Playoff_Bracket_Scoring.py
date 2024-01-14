@@ -388,6 +388,8 @@ def read_entries_csv():
     """
     entries = []
     entries_data = pd.read_csv('output/2024_entries_data.csv')
+    # default missing tiebreakers to 0 and convert back to int
+    entries_data['tie_breaker_points'] = entries_data['tie_breaker_points'].fillna(0).astype(int)
 
     index = 0
     while index <= len(entries_data)-1:
