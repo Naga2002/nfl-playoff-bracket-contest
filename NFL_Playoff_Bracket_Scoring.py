@@ -306,6 +306,8 @@ def score_entries(actual_entry, entries_list):
                 entry_team_list = [entry_matchup.away_team(), entry_matchup.home_team()]
                 actual_team_list = [actual_matchup.away_team(), actual_matchup.home_team()]
 
+                if 'nan' in actual_team_list:
+                    break
                 if sorted(entry_team_list) == sorted(actual_team_list):
                     bool_point_increased = entry_matchup.add_matchup_point_value(1)
                     if bool_point_increased == 1:
@@ -379,12 +381,32 @@ def read_entries_sheet():
 
     return entries
 
+def read_entries_csv():
+    """ reads the saved csv file where each row is an entry bracket
+
+        Returns a list of entry brackets
+    """
+    entries = []
+    entries_data = pd.read_csv('output/2024_entries_data.csv')
+
+    index = 0
+    while index <= len(entries_data)-1:
+        """ loop through each entry and go the bracket link to retrieve bracket data """
+        bracket_row = entries_data.iloc[index]
+
+        bracket = create_bracket_from_sheet(bracket_row)
+        entries.append(bracket)
+
+        index += 1
+
+    return entries
+
 def get_actual():
     """ reads Google sheet that is my "actual bracket" - updated after game outcomes each round
 
         Returns a single bracket named "actual"
     """
-    sheet_id = '17yVLdSgMs2fKbTOeq6XwSki29J4T6cD431UWVAvhnws'
+    sheet_id = '1hDCHSAwfNJPZU44hR0KnfTrhdWDP0hb3QW1ZUFfrkUA'
     sheet_name = 'Data'
     url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
     df = pd.read_csv(url)
@@ -423,10 +445,11 @@ def get_actual():
     return actual
 
 def main():
-    e = read_entries_sheet()
-    # a = get_actual()
+    # e = read_entries_sheet()
+    e = read_entries_csv()
+    a = get_actual()
     # print(a)
-    # score_entries(a, e)
+    score_entries(a, e)
     # print_entries(a)
     write_html_entries(e)
 
