@@ -22,7 +22,6 @@ def group_counts_percent(input_df, column_name):
 
     return df
 
-
 def build_superbowl_picks_df(entries_data):
     # get counts of teams selected as superbowl-winners
     return group_counts_percent(entries_data, 'superbowl-winner')
@@ -33,7 +32,15 @@ def build_superbowl_appears_df(entries_data):
     series2 = entries_data['superbowl-team_2']
     unioned_df = pd.concat([series1, series2]).to_frame(name = 'superbowl-teams')
 
-    return group_counts_percent(unioned_df, 'superbowl-teams')    
+    return group_counts_percent(unioned_df, 'superbowl-teams')
+
+def build_figure(input_df, title, y_name, nfl_team_colors):
+    fig = px.bar(input_df, x='count', y=y_name, text='percent', color=y_name
+                 ,title=title, orientation='h', color_discrete_map=nfl_team_colors)
+
+    fig.update_layout(showlegend=False)
+
+    return fig        
 
 def main():
 
@@ -49,7 +56,7 @@ def main():
 
     superbowl_appears = build_superbowl_appears_df(entries_data)
 
-    nfl_team_colors = nfl_team_colors = {
+    nfl_team_colors  = {
             'Arizona Cardinals': '#8B0021',
             'Atlanta Falcons': '#A71930',
             'Baltimore Ravens': '#241773',
@@ -85,17 +92,10 @@ def main():
             }
 
 
-    superbowl_picks_fig = px.bar(superbowl_picks, x='count', y='superbowl-winner', text='percent', color='superbowl-winner'
-                 ,title='Super Bowl Winners', orientation='h', color_discrete_map=nfl_team_colors)
+    superbowl_picks_fig = build_figure(superbowl_picks, 'Super Bowl Winners', 'superbowl-winner', nfl_team_colors)
     
-    superbowl_appears_fig = px.bar(superbowl_appears, x='count', y='superbowl-teams', text='percent', color='superbowl-teams'
-                 ,title='Super Bowl Team Appearances', orientation='h', color_discrete_map=nfl_team_colors)    
-
-    superbowl_picks_fig.update_layout(showlegend=False)
-    superbowl_appears_fig.update_layout(showlegend=False)
-
-
-    
+    superbowl_appears_fig = build_figure(superbowl_appears, 'Super Bowl Team Appearances', 'superbowl-teams', nfl_team_colors)
+       
     tab_sb, tab_conf, tab_div, tab_wc = st.tabs(['Superbowl', 'Conference', 'Divisional', 'Wild Card'])
 
     with tab_sb:
