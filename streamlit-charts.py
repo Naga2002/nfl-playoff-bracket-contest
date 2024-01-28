@@ -2,19 +2,30 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
-def build_superbowl_picks_df(entries_data):
-    # build superbowl winner picks dataframe for plotting
-    superbowl_picks = entries_data.groupby(['superbowl-winner'])['superbowl-winner'].count().reset_index(name='count')
-    total_entries=superbowl_picks['count'].sum()
-    superbowl_picks['percent'] = superbowl_picks['count'] / total_entries * 100
+def group_counts_percent(input_df, column_name):
+    """
+    input_df: original dataframe with data to be aggregated
+    column_name: the column in input_df to use for grouping
 
+    returns: df - will have orignal column_name count, and percent fields
+    """
+    # group by input column and set count as result
+    df = input_df.groupby([column_name])[column_name].count().reset_index(name='count')
+    # calculate precent of total
+    total_entries=df['count'].sum()
+    df['percent'] = df['count'] / total_entries * 100
     # round and sort
-    superbowl_picks = superbowl_picks.round({'percent': 2}).sort_values(by=['count', 'superbowl-winner'], ascending=False)
+    df = df.round({'percent': 2}).sort_values(by=['count',column_name], ascending=False)
 
     # convert percent to string and add '%' symbol for displaying
-    superbowl_picks['percent'] = superbowl_picks['percent'].astype(str) + '%'
+    df['percent'] = df['percent'].astype(str) + '%'
 
-    return superbowl_picks
+    return df
+
+
+def build_superbowl_picks_df(entries_data):
+    # get counts of teams selected as superbowl-winners
+    return group_counts_percent(entries_data, 'superbowl-winner')
 
 def build_superbowl_appears_df(entries_data):
     # Concat series of both column values
@@ -22,18 +33,7 @@ def build_superbowl_appears_df(entries_data):
     series2 = entries_data['superbowl-team_2']
     unioned_df = pd.concat([series1, series2]).to_frame(name = 'superbowl-teams')
 
-    # Group by and get counts along with percent of total
-    superbowl_appears = unioned_df.groupby(['superbowl-teams'])['superbowl-teams'].count().reset_index(name='count')
-    total_entries=superbowl_appears['count'].sum()
-    superbowl_appears['percent'] = superbowl_appears['count'] / total_entries * 100
-
-    # round and sort
-    superbowl_appears = superbowl_appears.round({'percent': 2}).sort_values(by=['count', 'superbowl-teams'], ascending=False)
-
-    # convert percent to string and add '%' symbol for displaying
-    superbowl_appears['percent'] = superbowl_appears['percent'].astype(str) + '%'
-
-    return superbowl_appears    
+    return group_counts_percent(unioned_df, 'superbowl-teams')    
 
 def main():
 
@@ -72,4 +72,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-# https://docs.google.com/spreadsheets/d/10AsqEXEEziW_oCshbEcBQJ0OEVOTigsGmWlPk59T7Ko/edit?usp=sharing
