@@ -52,6 +52,32 @@ def build_conference_appears_df(entries_data):
 
     return group_counts_percent(unioned_df, 'conference-teams')   
 
+# 
+def build_divisional_picks_df(entries_data):
+    # Concat series of column values
+    series1 = entries_data['divisional1-winner']
+    series2 = entries_data['divisional2-winner']
+    series3 = entries_data['divisional3-winner']
+    series4 = entries_data['divisional4-winner']
+    unioned_df = pd.concat([series1, series2, series3, series4]).to_frame(name = 'divisional-winners')     
+
+    return group_counts_percent(unioned_df, 'divisional-winners')   
+
+def build_divisional_appears_df(entries_data):
+    # Concat series of column values
+    series1 = entries_data['divisional1-team_1']
+    series2 = entries_data['divisional1-team_2']
+    series3 = entries_data['divisional2-team_1']
+    series4 = entries_data['divisional2-team_2']
+    series5 = entries_data['divisional3-team_1']
+    series6 = entries_data['divisional3-team_2']
+    series7 = entries_data['divisional4-team_1']
+    series8 = entries_data['divisional4-team_2']                
+    unioned_df = pd.concat([series1, series2, series3, series4, series5, series6,
+                            series7, series8]).to_frame(name = 'divisional-teams')     
+
+    return group_counts_percent(unioned_df, 'divisional-teams')
+
 def build_figure(input_df, title, y_name, nfl_team_colors):
     fig = px.bar(input_df, x='count', y=y_name, text='percent', color=y_name
                  ,title=title, orientation='h', color_discrete_map=nfl_team_colors)
@@ -110,12 +136,16 @@ def main():
     superbowl_appears = build_superbowl_appears_df(entries_data)
     conference_picks = build_conference_picks_df(entries_data)
     conference_appears = build_conference_appears_df(entries_data)
+    divisional_picks = build_divisional_picks_df(entries_data)
+    divisional_appears = build_divisional_appears_df(entries_data) 
 
-    # build each plottly figure
+    # build each plotly figure
     superbowl_picks_fig = build_figure(superbowl_picks, 'Super Bowl Winners', 'superbowl-winner', nfl_team_colors)
     superbowl_appears_fig = build_figure(superbowl_appears, 'Super Bowl Team Appearances', 'superbowl-teams', nfl_team_colors)
     conference_picks_fig = build_figure(conference_picks, 'Conference Winners', 'conference-winners', nfl_team_colors)
     conference_appears_fig = build_figure(conference_appears, 'Conference Team Appearances', 'conference-teams', nfl_team_colors)
+    divisional_picks_fig = build_figure(divisional_picks, 'Divisional Winners', 'divisional-winners', nfl_team_colors)
+    divisional_appears_fig = build_figure(divisional_appears, 'Divisional Team Appearances', 'divisional-teams', nfl_team_colors)
 
     # set tabs for streamlit   
     tab_sb, tab_conf, tab_div, tab_wc = st.tabs(['Superbowl', 'Conference', 'Divisional', 'Wild Card'])
@@ -131,6 +161,10 @@ def main():
         col1.plotly_chart(conference_picks_fig, use_container_width=True, )
         col2.plotly_chart(conference_appears_fig, use_container_width=True, showlegend=False)
 
-
+    with tab_div:
+        col1, col2 = st.columns(2)
+        col1.plotly_chart(divisional_picks_fig, use_container_width=True, )
+        col2.plotly_chart(divisional_appears_fig, use_container_width=True, showlegend=False)
+        
 if __name__ == '__main__':
     main()
