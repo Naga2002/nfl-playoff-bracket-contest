@@ -164,7 +164,7 @@ def main():
     conference_appears_fig = build_figure(conference_appears, 'Conference Team Appearances', 'conference-teams', nfl_team_colors)
     divisional_picks_fig = build_figure(divisional_picks, 'Divisional Winners', 'divisional-winners', nfl_team_colors)
     divisional_appears_fig = build_figure(divisional_appears, 'Divisional Team Appearances', 'divisional-teams', nfl_team_colors)
-    wildcard_picks_fig = build_figure(wildcard_picks, 'wildcard Winners', 'wildcard-winners', nfl_team_colors)
+    wildcard_picks_fig = build_figure(wildcard_picks, 'Wildcard Winners', 'wildcard-winners', nfl_team_colors)
 
     # set tabs for streamlit   
     tab_sb, tab_conf, tab_div, tab_wc = st.tabs(['Superbowl', 'Conference', 'Divisional', 'Wild Card'])
