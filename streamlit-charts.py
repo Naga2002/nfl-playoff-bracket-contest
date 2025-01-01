@@ -89,7 +89,10 @@ def build_figure(input_df, title, y_name, nfl_team_colors):
 def main():
 
     st.set_page_config(layout='wide')
-    st.title('phData NFL Playoff Challenge 2024-25')
+    
+    # workaround to center align the title
+    st.markdown("<h1 style='text-align: center;'>phData NFL Playoff Challenge 2024-25</h1>"
+                , unsafe_allow_html=True)
 
     # Read saved bracket data from csv
     entries_data = pd.read_csv('output/2024_entries_data.csv', index_col='name')
