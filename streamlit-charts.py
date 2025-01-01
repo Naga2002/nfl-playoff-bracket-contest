@@ -89,6 +89,7 @@ def build_figure(input_df, title, y_name, nfl_team_colors):
 def main():
 
     st.set_page_config(layout='wide')
+    st.title('phData NFL Playoff Challenge 2024-25')
 
     # Read saved bracket data from csv
     entries_data = pd.read_csv('output/2024_entries_data.csv', index_col='name')
@@ -165,6 +166,6 @@ def main():
         col1, col2 = st.columns(2)
         col1.plotly_chart(divisional_picks_fig, use_container_width=True, )
         col2.plotly_chart(divisional_appears_fig, use_container_width=True, showlegend=False)
-        
+
 if __name__ == '__main__':
     main()
