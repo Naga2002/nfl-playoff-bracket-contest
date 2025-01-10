@@ -104,11 +104,11 @@ def main():
     st.set_page_config(layout='wide')
 
     # workaround to center align the title
-    st.markdown("<h1 style='text-align: center;'>phData NFL Playoff Challenge 2023-24</h1>"
+    st.markdown("<h1 style='text-align: center;'>phData NFL Playoff Challenge 2024-25</h1>"
                 , unsafe_allow_html=True)
 
     # Read saved bracket data from csv
-    entries_data = pd.read_csv('output/2024_entries_data.csv', index_col='name')
+    entries_data = pd.read_csv('output/2025_entries_data.csv', index_col='name')
 
     # Remove the "actual" entry if already added
     entries_data.drop('actual', inplace = True)
