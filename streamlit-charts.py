@@ -131,7 +131,7 @@ def main():
             'Jacksonville Jaguars': '#006778',
             'Kansas City Chiefs': '#E31837',
             'Las Vegas Raiders': '#000000',
-            'Los Angeles Chargers': '#002A5E',
+            'Los Angeles Chargers': '#0080C6',
             'Los Angeles Rams': '#002244',
             'Miami Dolphins': '#008E97',
             'Minnesota Vikings': '#4F2683',
