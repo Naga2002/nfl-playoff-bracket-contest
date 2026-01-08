@@ -387,7 +387,7 @@ def read_entries_csv():
         Returns a list of entry brackets
     """
     entries = []
-    entries_data = pd.read_csv('output/2025_entries_data.csv')
+    entries_data = pd.read_csv('output/2026_entries_data.csv')
     # default missing tiebreakers to 0 and convert back to int
     entries_data['tie_breaker_points'] = entries_data['tie_breaker_points'].fillna(0).astype(int)
 
@@ -408,7 +408,8 @@ def get_actual():
 
         Returns a single bracket named "actual"
     """
-    sheet_id = '11zkXy0LJ_-YsOF9vhLTCl_gGRc7Ok2lyiuGbPZ4vj1E' #2025 actual
+
+    sheet_id = '1RLH0FvacXpJczf2j2HY0himhap2hgIUNkUDJINOY4GU' #2026 actual
     sheet_name = 'Data'
     url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}'
     df = pd.read_csv(url)
@@ -451,7 +452,7 @@ def main():
     e = read_entries_csv()
     a = get_actual()
     # print(a)
-    score_entries(a, e)
+    # score_entries(a, e)
     # print_entries(a)
     write_html_entries(e)
 
