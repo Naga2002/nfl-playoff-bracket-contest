@@ -136,7 +136,7 @@ with btn_col2:
         
         # Clear all Divisional teams and checkboxes
         st.session_state.afc_div1_t1 = ""
-        st.session_state.afc_div1_t2 = ""
+        st.session_state.afc_div1_t2 = AFC_TEAMS.get(1)
         st.session_state.afc_div1_w1 = False
         st.session_state.afc_div1_w2 = False
         st.session_state.afc_div2_t1 = ""
@@ -144,7 +144,7 @@ with btn_col2:
         st.session_state.afc_div2_w1 = False
         st.session_state.afc_div2_w2 = False
         st.session_state.nfc_div1_t1 = ""
-        st.session_state.nfc_div1_t2 = ""
+        st.session_state.nfc_div1_t2 = NFC_TEAMS.get(1)
         st.session_state.nfc_div1_w1 = False
         st.session_state.nfc_div1_w2 = False
         st.session_state.nfc_div2_t1 = ""
@@ -182,36 +182,62 @@ wc_col1, wc_col2 = st.columns(2)
 with wc_col1:
     st.subheader("AFC Wild Card")
     
-    # Game 1: 7 vs 2
-    st.checkbox(AFC_TEAMS.get(7), key="afc_wc1_w1")
-    st.checkbox(AFC_TEAMS.get(2), key="afc_wc1_w2")
-    st.write("")
+    with st.container(border=True):
+        cb_col1, vs_col, cb_col2 = st.columns([5, 1, 5])
+        with cb_col1:
+            st.checkbox(AFC_TEAMS.get(7), key="afc_wc1_w1")
+        with vs_col:
+            st.markdown("<div style='text-align: center; padding-top: 8px;'>vs</div>", unsafe_allow_html=True)
+        with cb_col2:
+            st.checkbox(AFC_TEAMS.get(2), key="afc_wc1_w2")
     
-    # Game 2: 6 vs 3
-    st.checkbox(AFC_TEAMS.get(6), key="afc_wc2_w1")
-    st.checkbox(AFC_TEAMS.get(3), key="afc_wc2_w2")
-    st.write("")
+    with st.container(border=True):
+        cb_col1, vs_col, cb_col2 = st.columns([5, 1, 5])
+        with cb_col1:
+            st.checkbox(AFC_TEAMS.get(6), key="afc_wc2_w1")
+        with vs_col:
+            st.markdown("<div style='text-align: center; padding-top: 8px;'>vs</div>", unsafe_allow_html=True)
+        with cb_col2:
+            st.checkbox(AFC_TEAMS.get(3), key="afc_wc2_w2")
     
-    # Game 3: 5 vs 4
-    st.checkbox(AFC_TEAMS.get(5), key="afc_wc3_w1")
-    st.checkbox(AFC_TEAMS.get(4), key="afc_wc3_w2")
+    with st.container(border=True):
+        cb_col1, vs_col, cb_col2 = st.columns([5, 1, 5])
+        with cb_col1:
+            st.checkbox(AFC_TEAMS.get(5), key="afc_wc3_w1")
+        with vs_col:
+            st.markdown("<div style='text-align: center; padding-top: 8px;'>vs</div>", unsafe_allow_html=True)
+        with cb_col2:
+            st.checkbox(AFC_TEAMS.get(4), key="afc_wc3_w2")
 
 with wc_col2:
     st.subheader("NFC Wild Card")
     
-    # Game 1: 7 vs 2
-    st.checkbox(NFC_TEAMS.get(7), key="nfc_wc1_w1")
-    st.checkbox(NFC_TEAMS.get(2), key="nfc_wc1_w2")
-    st.write("")
+    with st.container(border=True):
+        cb_col1, vs_col, cb_col2 = st.columns([5, 1, 5])
+        with cb_col1:
+            st.checkbox(NFC_TEAMS.get(7), key="nfc_wc1_w1")
+        with vs_col:
+            st.markdown("<div style='text-align: center; padding-top: 8px;'>vs</div>", unsafe_allow_html=True)
+        with cb_col2:
+            st.checkbox(NFC_TEAMS.get(2), key="nfc_wc1_w2")
     
-    # Game 2: 6 vs 3
-    st.checkbox(NFC_TEAMS.get(6), key="nfc_wc2_w1")
-    st.checkbox(NFC_TEAMS.get(3), key="nfc_wc2_w2")
-    st.write("")
+    with st.container(border=True):
+        cb_col1, vs_col, cb_col2 = st.columns([5, 1, 5])
+        with cb_col1:
+            st.checkbox(NFC_TEAMS.get(6), key="nfc_wc2_w1")
+        with vs_col:
+            st.markdown("<div style='text-align: center; padding-top: 8px;'>vs</div>", unsafe_allow_html=True)
+        with cb_col2:
+            st.checkbox(NFC_TEAMS.get(3), key="nfc_wc2_w2")
     
-    # Game 3: 5 vs 4
-    st.checkbox(NFC_TEAMS.get(5), key="nfc_wc3_w1")
-    st.checkbox(NFC_TEAMS.get(4), key="nfc_wc3_w2")
+    with st.container(border=True):
+        cb_col1, vs_col, cb_col2 = st.columns([5, 1, 5])
+        with cb_col1:
+            st.checkbox(NFC_TEAMS.get(5), key="nfc_wc3_w1")
+        with vs_col:
+            st.markdown("<div style='text-align: center; padding-top: 8px;'>vs</div>", unsafe_allow_html=True)
+        with cb_col2:
+            st.checkbox(NFC_TEAMS.get(4), key="nfc_wc3_w2")
 
 st.markdown("---")
 
@@ -220,33 +246,31 @@ div_col1, div_col2 = st.columns(2)
 
 with div_col1:
     st.subheader("AFC Divisional Round")
+    st.selectbox("", [""] + [AFC_TEAMS[seed] for seed in [4, 5, 6, 7]], key="afc_div1_t1")
+    st.selectbox("vs", [AFC_TEAMS.get(1)], key="afc_div1_t2")
+    st.markdown("<p style='text-align: center;'>Select a winner</p>", unsafe_allow_html=True)
+    st.checkbox(st.session_state.get("afc_div1_t1", "(select team above)") or "(select team above)", key="afc_div1_w1")
+    st.checkbox(st.session_state.get("afc_div1_t2", "(select team above)") or "(select team above)", key="afc_div1_w2")
     
-    st.write("**Game 1**")
-    st.selectbox("Team 1", [""] + list(AFC_TEAMS.values()), key="afc_div1_t1")
-    st.selectbox("Team 2", [""] + list(AFC_TEAMS.values()), key="afc_div1_t2")
-    st.checkbox(st.session_state.get("afc_div1_t1", "Team 1") or "Team 1", key="afc_div1_w1")
-    st.checkbox(st.session_state.get("afc_div1_t2", "Team 2") or "Team 2", key="afc_div1_w2")
-    
-    st.write("**Game 2**")
-    st.selectbox("Team 1", [""] + list(AFC_TEAMS.values()), key="afc_div2_t1")
-    st.selectbox("Team 2", [""] + list(AFC_TEAMS.values()), key="afc_div2_t2")
-    st.checkbox(st.session_state.get("afc_div2_t1", "Team 1") or "Team 1", key="afc_div2_w1")
-    st.checkbox(st.session_state.get("afc_div2_t2", "Team 2") or "Team 2", key="afc_div2_w2")
+    st.selectbox("", [""] + list(AFC_TEAMS.values()), key="afc_div2_t1")
+    st.selectbox("vs", [""] + list(AFC_TEAMS.values()), key="afc_div2_t2")
+    st.markdown("<p style='text-align: center;'>Select a winner</p>", unsafe_allow_html=True)
+    st.checkbox(st.session_state.get("afc_div2_t1", "(select team above)") or "(select team above)", key="afc_div2_w1")
+    st.checkbox(st.session_state.get("afc_div2_t2", "(select team above)") or "(select team above)", key="afc_div2_w2")
 
 with div_col2:
     st.subheader("NFC Divisional Round")
+    st.selectbox("", [""] + [NFC_TEAMS[seed] for seed in [4, 5, 6, 7]], key="nfc_div1_t1")
+    st.selectbox("vs", [NFC_TEAMS.get(1)], key="nfc_div1_t2")
+    st.markdown("<p style='text-align: center;'>Select a winner</p>", unsafe_allow_html=True)
+    st.checkbox(st.session_state.get("nfc_div1_t1", "(select team above)") or "(select team above)", key="nfc_div1_w1")
+    st.checkbox(st.session_state.get("nfc_div1_t2", "(select team above)") or "(select team above)", key="nfc_div1_w2")
     
-    st.write("**Game 1**")
-    st.selectbox("Team 1", [""] + list(NFC_TEAMS.values()), key="nfc_div1_t1")
-    st.selectbox("Team 2", [""] + list(NFC_TEAMS.values()), key="nfc_div1_t2")
-    st.checkbox(st.session_state.get("nfc_div1_t1", "Team 1") or "Team 1", key="nfc_div1_w1")
-    st.checkbox(st.session_state.get("nfc_div1_t2", "Team 2") or "Team 2", key="nfc_div1_w2")
-    
-    st.write("**Game 2**")
-    st.selectbox("Team 1", [""] + list(NFC_TEAMS.values()), key="nfc_div2_t1")
-    st.selectbox("Team 2", [""] + list(NFC_TEAMS.values()), key="nfc_div2_t2")
-    st.checkbox(st.session_state.get("nfc_div2_t1", "Team 1") or "Team 1", key="nfc_div2_w1")
-    st.checkbox(st.session_state.get("nfc_div2_t2", "Team 2") or "Team 2", key="nfc_div2_w2")
+    st.selectbox("", [""] + list(NFC_TEAMS.values()), key="nfc_div2_t1")
+    st.selectbox("vs", [""] + list(NFC_TEAMS.values()), key="nfc_div2_t2")
+    st.markdown("<p style='text-align: center;'>Select a winner</p>", unsafe_allow_html=True)
+    st.checkbox(st.session_state.get("nfc_div2_t1", "(select team above)") or "(select team above)", key="nfc_div2_w1")
+    st.checkbox(st.session_state.get("nfc_div2_t2", "(select team above)") or "(select team above)", key="nfc_div2_w2")
 
 st.markdown("---")
 
@@ -255,31 +279,33 @@ conf_col1, conf_col2 = st.columns(2)
 
 with conf_col1:
     st.subheader("AFC Conference Game")
-    st.selectbox("Team 1", [""] + list(AFC_TEAMS.values()), key="afc_conf_t1")
-    st.selectbox("Team 2", [""] + list(AFC_TEAMS.values()), key="afc_conf_t2")
-    st.checkbox(st.session_state.get("afc_conf_t1", "Team 1") or "Team 1", key="afc_conf_w1")
-    st.checkbox(st.session_state.get("afc_conf_t2", "Team 2") or "Team 2", key="afc_conf_w2")
+    st.selectbox("", [""] + list(AFC_TEAMS.values()), key="afc_conf_t1")
+    st.selectbox("vs", [""] + list(AFC_TEAMS.values()), key="afc_conf_t2")
+    st.markdown("<p style='text-align: center;'>Select a winner</p>", unsafe_allow_html=True)
+    st.checkbox(st.session_state.get("afc_conf_t1", "(select team above)") or "(select team above)", key="afc_conf_w1")
+    st.checkbox(st.session_state.get("afc_conf_t2", "(select team above)") or "(select team above)", key="afc_conf_w2")
 
 with conf_col2:
     st.subheader("NFC Conference Game")
-    st.selectbox("Team 1", [""] + list(NFC_TEAMS.values()), key="nfc_conf_t1")
-    st.selectbox("Team 2", [""] + list(NFC_TEAMS.values()), key="nfc_conf_t2")
-    st.checkbox(st.session_state.get("nfc_conf_t1", "Team 1") or "Team 1", key="nfc_conf_w1")
-    st.checkbox(st.session_state.get("nfc_conf_t2", "Team 2") or "Team 2", key="nfc_conf_w2")
+    st.selectbox("", [""] + list(NFC_TEAMS.values()), key="nfc_conf_t1")
+    st.selectbox("vs", [""] + list(NFC_TEAMS.values()), key="nfc_conf_t2")
+    st.markdown("<p style='text-align: center;'>Select a winner</p>", unsafe_allow_html=True)
+    st.checkbox(st.session_state.get("nfc_conf_t1", "(select team above)") or "(select team above)", key="nfc_conf_w1")
+    st.checkbox(st.session_state.get("nfc_conf_t2", "(select team above)") or "(select team above)", key="nfc_conf_w2")
 
 st.markdown("---")
 
 # Super Bowl Section
 st.subheader("🏆 Super Bowl")
-sb_col1, sb_col2, sb_col3 = st.columns([2, 2, 1])
+sb_col1, sb_col2 = st.columns([4, 1])
 with sb_col1:
-    st.selectbox("Team 1", [""] + list(AFC_TEAMS.values()), key="sb_team1")
-    st.checkbox(st.session_state.get("sb_team1", "Team 1") or "Team 1", key="sb_win1")
+    st.selectbox("", [""] + list(AFC_TEAMS.values()), key="sb_team1")
+    st.selectbox("vs", [""] + list(NFC_TEAMS.values()), key="sb_team2")
+    st.markdown("<p style='text-align: center;'>Select a winner</p>", unsafe_allow_html=True)
+    st.checkbox(st.session_state.get("sb_team1", "(select team above)") or "(select team above)", key="sb_win1")
+    st.checkbox(st.session_state.get("sb_team2", "(select team above)") or "(select team above)", key="sb_win2")
 with sb_col2:
-    st.selectbox("Team 2", [""] + list(NFC_TEAMS.values()), key="sb_team2")
-    st.checkbox(st.session_state.get("sb_team2", "Team 2") or "Team 2", key="sb_win2")
-with sb_col3:
-    st.number_input("Tiebreaker (total points)", min_value=0, max_value=200, key="tiebreaker")
+    st.number_input("Tiebreaker (total points)", min_value=0, max_value=200, key="tiebreaker", help="Total points scored in the Super Bowl compared by absolute difference")
 
 st.markdown("---")
 
@@ -447,7 +473,7 @@ if st.button("Submit Bracket", type="primary"):
                                        st.session_state.nfc_wc3_w1, st.session_state.nfc_wc3_w2),
         # Divisional
         'DIVISIONAL1_TEAM_1': st.session_state.afc_div1_t1,
-        'DIVISIONAL1_TEAM_2': st.session_state.afc_div1_t2,
+        'DIVISIONAL1_TEAM_2': AFC_TEAMS.get(1),
         'DIVISIONAL1_WINNER': get_winner(st.session_state.afc_div1_t1, st.session_state.afc_div1_t2, 
                                         st.session_state.afc_div1_w1, st.session_state.afc_div1_w2),
         'DIVISIONAL2_TEAM_1': st.session_state.afc_div2_t1,
@@ -455,7 +481,7 @@ if st.button("Submit Bracket", type="primary"):
         'DIVISIONAL2_WINNER': get_winner(st.session_state.afc_div2_t1, st.session_state.afc_div2_t2, 
                                         st.session_state.afc_div2_w1, st.session_state.afc_div2_w2),
         'DIVISIONAL3_TEAM_1': st.session_state.nfc_div1_t1,
-        'DIVISIONAL3_TEAM_2': st.session_state.nfc_div1_t2,
+        'DIVISIONAL3_TEAM_2': NFC_TEAMS.get(1),
         'DIVISIONAL3_WINNER': get_winner(st.session_state.nfc_div1_t1, st.session_state.nfc_div1_t2, 
                                         st.session_state.nfc_div1_w1, st.session_state.nfc_div1_w2),
         'DIVISIONAL4_TEAM_1': st.session_state.nfc_div2_t1,
