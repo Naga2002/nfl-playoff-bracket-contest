@@ -33,7 +33,7 @@ st.title("🏈 NFL Playoff Bracket Entry")
 st.text_input("Name ", key="name", placeholder="Enter your full name and any additional info to make it a unique entry name")
 st.text_input("Email ", key="email", placeholder="flast@phdata.io")
 st.text_input("Edit Key ", key="edit_key", type="password", 
-                help="Create a secret key to edit your entry later. This uniquely identifies your entry, so make it different per entry.")
+                help="Create a secret key to edit your entry later. This along with your email uniquely identifies your entry, so make it different per entry.")
 
 # two buttons: Retrieve Bracket and Clear Bracket
 btn_col1, btn_col2 = st.columns(2)
@@ -340,7 +340,7 @@ if st.button("Submit Bracket", type="primary"):
     # Validate all winners are selected
     validation_errors = []
     
-    # Wild Card validation
+    # Wild Card validation - winners only (teams are predetermined)
     if not get_winner(AFC_TEAMS.get(7), AFC_TEAMS.get(2), st.session_state.afc_wc1_w1, st.session_state.afc_wc1_w2):
         validation_errors.append("AFC Wild Card Game 1: Select exactly one winner")
     if not get_winner(AFC_TEAMS.get(6), AFC_TEAMS.get(3), st.session_state.afc_wc2_w1, st.session_state.afc_wc2_w2):
@@ -353,6 +353,58 @@ if st.button("Submit Bracket", type="primary"):
         validation_errors.append("NFC Wild Card Game 2: Select exactly one winner")
     if not get_winner(NFC_TEAMS.get(5), NFC_TEAMS.get(4), st.session_state.nfc_wc3_w1, st.session_state.nfc_wc3_w2):
         validation_errors.append("NFC Wild Card Game 3: Select exactly one winner")
+    
+    # Divisional Round validation - both teams and winners
+    if not st.session_state.afc_div1_t1 or st.session_state.afc_div1_t1 == "":
+        validation_errors.append("AFC Divisional Game 1: Select team 1")
+    if not st.session_state.afc_div1_t2 or st.session_state.afc_div1_t2 == "":
+        validation_errors.append("AFC Divisional Game 1: Select team 2")
+    if not get_winner(st.session_state.afc_div1_t1, st.session_state.afc_div1_t2, st.session_state.afc_div1_w1, st.session_state.afc_div1_w2):
+        validation_errors.append("AFC Divisional Game 1: Select exactly one winner")
+    
+    if not st.session_state.afc_div2_t1 or st.session_state.afc_div2_t1 == "":
+        validation_errors.append("AFC Divisional Game 2: Select team 1")
+    if not st.session_state.afc_div2_t2 or st.session_state.afc_div2_t2 == "":
+        validation_errors.append("AFC Divisional Game 2: Select team 2")
+    if not get_winner(st.session_state.afc_div2_t1, st.session_state.afc_div2_t2, st.session_state.afc_div2_w1, st.session_state.afc_div2_w2):
+        validation_errors.append("AFC Divisional Game 2: Select exactly one winner")
+    
+    if not st.session_state.nfc_div1_t1 or st.session_state.nfc_div1_t1 == "":
+        validation_errors.append("NFC Divisional Game 1: Select team 1")
+    if not st.session_state.nfc_div1_t2 or st.session_state.nfc_div1_t2 == "":
+        validation_errors.append("NFC Divisional Game 1: Select team 2")
+    if not get_winner(st.session_state.nfc_div1_t1, st.session_state.nfc_div1_t2, st.session_state.nfc_div1_w1, st.session_state.nfc_div1_w2):
+        validation_errors.append("NFC Divisional Game 1: Select exactly one winner")
+    
+    if not st.session_state.nfc_div2_t1 or st.session_state.nfc_div2_t1 == "":
+        validation_errors.append("NFC Divisional Game 2: Select team 1")
+    if not st.session_state.nfc_div2_t2 or st.session_state.nfc_div2_t2 == "":
+        validation_errors.append("NFC Divisional Game 2: Select team 2")
+    if not get_winner(st.session_state.nfc_div2_t1, st.session_state.nfc_div2_t2, st.session_state.nfc_div2_w1, st.session_state.nfc_div2_w2):
+        validation_errors.append("NFC Divisional Game 2: Select exactly one winner")
+    
+    # Conference Game validation - both teams and winners
+    if not st.session_state.afc_conf_t1 or st.session_state.afc_conf_t1 == "":
+        validation_errors.append("AFC Conference Game: Select team 1")
+    if not st.session_state.afc_conf_t2 or st.session_state.afc_conf_t2 == "":
+        validation_errors.append("AFC Conference Game: Select team 2")
+    if not get_winner(st.session_state.afc_conf_t1, st.session_state.afc_conf_t2, st.session_state.afc_conf_w1, st.session_state.afc_conf_w2):
+        validation_errors.append("AFC Conference Game: Select exactly one winner")
+    
+    if not st.session_state.nfc_conf_t1 or st.session_state.nfc_conf_t1 == "":
+        validation_errors.append("NFC Conference Game: Select team 1")
+    if not st.session_state.nfc_conf_t2 or st.session_state.nfc_conf_t2 == "":
+        validation_errors.append("NFC Conference Game: Select team 2")
+    if not get_winner(st.session_state.nfc_conf_t1, st.session_state.nfc_conf_t2, st.session_state.nfc_conf_w1, st.session_state.nfc_conf_w2):
+        validation_errors.append("NFC Conference Game: Select exactly one winner")
+    
+    # Super Bowl validation - both teams and winner
+    if not st.session_state.sb_team1 or st.session_state.sb_team1 == "":
+        validation_errors.append("Super Bowl: Select AFC team")
+    if not st.session_state.sb_team2 or st.session_state.sb_team2 == "":
+        validation_errors.append("Super Bowl: Select NFC team")
+    if not get_winner(st.session_state.sb_team1, st.session_state.sb_team2, st.session_state.sb_win1, st.session_state.sb_win2):
+        validation_errors.append("Super Bowl: Select exactly one winner")
     
     if validation_errors:
         st.error("Please fix the following errors:")
@@ -509,24 +561,37 @@ if st.button("Submit Bracket", type="primary"):
     
     # Insert into Snowflake using direct SQL instead of write_pandas
     try:
-        # st.write("🔍 DEBUG: Preparing SQL INSERT")
+        # st.write("🔍 DEBUG: Preparing SQL MERGE")
+        
+        # Build column assignments for UPDATE
+        update_columns = [k for k in data.keys() if k not in ['PARTICIPANT_EMAIL', 'EDIT_KEY']]
+        update_set = ', '.join([f"{col} = source.{col}" for col in update_columns])
         
         # Build column list and values for INSERT
         columns = ', '.join(data.keys())
-        placeholders = ', '.join(['?' for _ in data.keys()])
+        source_columns = ', '.join([f"? AS {col}" for col in data.keys()])
         values = list(data.values())
         
-        insert_sql = f"""
-            INSERT INTO NFL_PLAYOFF_CONTEST.PROD.NFL_BRACKET_ENTRIES ({columns})
-            VALUES ({placeholders})
+        merge_sql = f"""
+            MERGE INTO NFL_PLAYOFF_CONTEST.PROD.NFL_BRACKET_ENTRIES AS target
+            USING (SELECT {source_columns}) AS source
+            ON target.PARTICIPANT_EMAIL = source.PARTICIPANT_EMAIL 
+               AND target.EDIT_KEY = source.EDIT_KEY
+            WHEN MATCHED THEN
+                UPDATE SET 
+                    {update_set},
+                    SUBMITTED_AT = CURRENT_TIMESTAMP()
+            WHEN NOT MATCHED THEN
+                INSERT ({columns})
+                VALUES ({', '.join([f'source.{col}' for col in data.keys()])})
         """
         
-        # st.write("🔍 DEBUG: Executing INSERT")
-        # st.code(insert_sql[:200] + "...")
+        # st.write("🔍 DEBUG: Executing MERGE")
+        # st.code(merge_sql[:200] + "...")
         
-        session.sql(insert_sql, params=values).collect()
+        session.sql(merge_sql, params=values).collect()
         
-        # st.write("🔍 DEBUG: Insert completed")
+        # st.write("🔍 DEBUG: Merge completed")
         st.success(f"✅ Bracket submitted successfully for {st.session_state.name}!")
         st.info("🔑 Save your Edit Key to modify this entry later.")
         st.balloons()
