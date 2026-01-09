@@ -359,6 +359,8 @@ if st.button("Submit Bracket", type="primary"):
         validation_errors.append("AFC Divisional Game 1: Select team 1")
     if not st.session_state.afc_div1_t2 or st.session_state.afc_div1_t2 == "":
         validation_errors.append("AFC Divisional Game 1: Select team 2")
+    if st.session_state.afc_div1_t1 == st.session_state.afc_div1_t2:
+        validation_errors.append("AFC Divisional Game 1: Teams cannot be the same")
     if not get_winner(st.session_state.afc_div1_t1, st.session_state.afc_div1_t2, st.session_state.afc_div1_w1, st.session_state.afc_div1_w2):
         validation_errors.append("AFC Divisional Game 1: Select exactly one winner")
     
@@ -366,6 +368,8 @@ if st.button("Submit Bracket", type="primary"):
         validation_errors.append("AFC Divisional Game 2: Select team 1")
     if not st.session_state.afc_div2_t2 or st.session_state.afc_div2_t2 == "":
         validation_errors.append("AFC Divisional Game 2: Select team 2")
+    if st.session_state.afc_div2_t1 == st.session_state.afc_div2_t2:
+        validation_errors.append("AFC Divisional Game 2: Teams cannot be the same")
     if not get_winner(st.session_state.afc_div2_t1, st.session_state.afc_div2_t2, st.session_state.afc_div2_w1, st.session_state.afc_div2_w2):
         validation_errors.append("AFC Divisional Game 2: Select exactly one winner")
     
@@ -373,6 +377,8 @@ if st.button("Submit Bracket", type="primary"):
         validation_errors.append("NFC Divisional Game 1: Select team 1")
     if not st.session_state.nfc_div1_t2 or st.session_state.nfc_div1_t2 == "":
         validation_errors.append("NFC Divisional Game 1: Select team 2")
+    if st.session_state.nfc_div1_t1 == st.session_state.nfc_div1_t2:
+        validation_errors.append("NFC Divisional Game 1: Teams cannot be the same")
     if not get_winner(st.session_state.nfc_div1_t1, st.session_state.nfc_div1_t2, st.session_state.nfc_div1_w1, st.session_state.nfc_div1_w2):
         validation_errors.append("NFC Divisional Game 1: Select exactly one winner")
     
@@ -380,6 +386,8 @@ if st.button("Submit Bracket", type="primary"):
         validation_errors.append("NFC Divisional Game 2: Select team 1")
     if not st.session_state.nfc_div2_t2 or st.session_state.nfc_div2_t2 == "":
         validation_errors.append("NFC Divisional Game 2: Select team 2")
+    if st.session_state.nfc_div2_t1 == st.session_state.nfc_div2_t2:
+        validation_errors.append("NFC Divisional Game 2: Teams cannot be the same")
     if not get_winner(st.session_state.nfc_div2_t1, st.session_state.nfc_div2_t2, st.session_state.nfc_div2_w1, st.session_state.nfc_div2_w2):
         validation_errors.append("NFC Divisional Game 2: Select exactly one winner")
     
@@ -388,6 +396,8 @@ if st.button("Submit Bracket", type="primary"):
         validation_errors.append("AFC Conference Game: Select team 1")
     if not st.session_state.afc_conf_t2 or st.session_state.afc_conf_t2 == "":
         validation_errors.append("AFC Conference Game: Select team 2")
+    if st.session_state.afc_conf_t1 == st.session_state.afc_conf_t2:
+        validation_errors.append("AFC Conference Game: Teams cannot be the same")
     if not get_winner(st.session_state.afc_conf_t1, st.session_state.afc_conf_t2, st.session_state.afc_conf_w1, st.session_state.afc_conf_w2):
         validation_errors.append("AFC Conference Game: Select exactly one winner")
     
@@ -395,6 +405,8 @@ if st.button("Submit Bracket", type="primary"):
         validation_errors.append("NFC Conference Game: Select team 1")
     if not st.session_state.nfc_conf_t2 or st.session_state.nfc_conf_t2 == "":
         validation_errors.append("NFC Conference Game: Select team 2")
+    if st.session_state.nfc_conf_t1 == st.session_state.nfc_conf_t2:
+        validation_errors.append("NFC Conference Game: Teams cannot be the same")
     if not get_winner(st.session_state.nfc_conf_t1, st.session_state.nfc_conf_t2, st.session_state.nfc_conf_w1, st.session_state.nfc_conf_w2):
         validation_errors.append("NFC Conference Game: Select exactly one winner")
     
@@ -403,6 +415,8 @@ if st.button("Submit Bracket", type="primary"):
         validation_errors.append("Super Bowl: Select AFC team")
     if not st.session_state.sb_team2 or st.session_state.sb_team2 == "":
         validation_errors.append("Super Bowl: Select NFC team")
+    if st.session_state.sb_team1 == st.session_state.sb_team2:
+        validation_errors.append("Super Bowl: Teams cannot be the same")
     if not get_winner(st.session_state.sb_team1, st.session_state.sb_team2, st.session_state.sb_win1, st.session_state.sb_win2):
         validation_errors.append("Super Bowl: Select exactly one winner")
     
