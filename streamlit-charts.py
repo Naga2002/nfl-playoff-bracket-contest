@@ -172,21 +172,21 @@ def main():
     # build graphs in columns on each tab
     with tab_sb:
         col1, col2 = st.columns(2)
-        col1.plotly_chart(superbowl_picks_fig, use_container_width=True, )
-        col2.plotly_chart(superbowl_appears_fig, use_container_width=True, showlegend=False)
+        col1.plotly_chart(superbowl_picks_fig, use_container_width=True)
+        col2.plotly_chart(superbowl_appears_fig, use_container_width=True)
 
     with tab_conf:
         col1, col2 = st.columns(2)
-        col1.plotly_chart(conference_picks_fig, use_container_width=True, )
-        col2.plotly_chart(conference_appears_fig, use_container_width=True, showlegend=False)
+        col1.plotly_chart(conference_picks_fig, use_container_width=True)
+        col2.plotly_chart(conference_appears_fig, use_container_width=True)
 
     with tab_div:
         col1, col2 = st.columns(2)
-        col1.plotly_chart(divisional_picks_fig, use_container_width=True, )
-        col2.plotly_chart(divisional_appears_fig, use_container_width=True, showlegend=False)
+        col1.plotly_chart(divisional_picks_fig, use_container_width=True)
+        col2.plotly_chart(divisional_appears_fig, use_container_width=True)
 
     with tab_wc:
-        st.plotly_chart(wildcard_picks_fig, use_container_width=True, )
+        st.plotly_chart(wildcard_picks_fig, use_container_width=True)
 
 
 if __name__ == '__main__':
