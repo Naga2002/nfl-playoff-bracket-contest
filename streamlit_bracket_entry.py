@@ -28,36 +28,44 @@ NFC_TEAMS = {
 
 st.title("🏈 NFL Playoff Bracket Entry")
 
+# Initialize session state keys for all form fields before widgets are created
+if "name" not in st.session_state:
+    st.session_state.name = ""
+if "email" not in st.session_state:
+    st.session_state.email = ""
+if "edit_key" not in st.session_state:
+    st.session_state.edit_key = ""
+if "retrieve_email" not in st.session_state:
+    st.session_state.retrieve_email = ""
+if "retrieve_key" not in st.session_state:
+    st.session_state.retrieve_key = ""
 
-# Top section: Name, Email, Edit Key
-st.text_input("Name ", key="name", placeholder="Enter your full name and any additional info to make it a unique entry name")
-st.text_input("Email ", key="email", placeholder="flast@phdata.io")
-st.text_input("Edit Key ", key="edit_key", type="password", 
-                help="Create a secret key to edit your entry later. This along with your email uniquely identifies your entry, so make it different per entry.")
-
-# two buttons: Retrieve Bracket and Clear Bracket
-btn_col1, btn_col2 = st.columns(2)
-with btn_col1:
-    if st.button("Retrieve Bracket", type="primary"):
-        if not st.session_state.name:
-            st.error("Please enter your name")
-        elif not st.session_state.email:
+# Handle Retrieve Bracket button BEFORE creating widgets
+# Use temporary input fields that don't conflict with the main form
+st.subheader("Retrieve Existing Bracket")
+retrieve_col1, retrieve_col2, retrieve_col3 = st.columns([2, 2, 1])
+with retrieve_col1:
+    retrieve_email = st.text_input("Email for retrieval", key="retrieve_email", placeholder="flast@phdata.io")
+with retrieve_col2:
+    retrieve_key = st.text_input("Edit Key for retrieval", key="retrieve_key", type="password", placeholder="Your edit key")
+with retrieve_col3:
+    st.write("")  # Spacer for alignment
+    if st.button("Retrieve", type="primary"):
+        if not st.session_state.retrieve_email:
             st.error("Please enter your email")
-        elif not st.session_state.edit_key:
+        elif not st.session_state.retrieve_key:
             st.error("Please enter your edit key")
         else:
             try:
                 query = """
                     SELECT * FROM NFL_PLAYOFF_CONTEST.PROD.NFL_BRACKET_ENTRIES
-                    WHERE PARTICIPANT_NAME = ? 
-                    AND PARTICIPANT_EMAIL = ?
+                    WHERE PARTICIPANT_EMAIL = ?
                     AND EDIT_KEY = ?
                 """
                 result = session.sql(query, params=[
-                    st.session_state.name,
-                    st.session_state.email,
-                    st.session_state.edit_key
-                ]).collect()
+                    st.session_state.retrieve_email,
+                    st.session_state.retrieve_key
+                    ]).collect()
                 
                 if len(result) == 0:
                     st.error("No bracket found with the provided credentials")
@@ -66,8 +74,10 @@ with btn_col1:
                 else:
                     row = result[0]
                     
-                    # Populate tiebreaker
-                    st.session_state.tiebreaker = int(row['TIE_BREAKER_POINTS']) if row['TIE_BREAKER_POINTS'] else 45
+                    # Load data into session state BEFORE widgets are created
+                    st.session_state.name = row['PARTICIPANT_NAME']
+                    st.session_state.email = st.session_state.retrieve_email
+                    st.session_state.edit_key = st.session_state.retrieve_key
                     
                     # Wild Card winners (radio buttons)
                     st.session_state.afc_wc1_winner = row['WILDCARD1_WINNER']
@@ -76,12 +86,7 @@ with btn_col1:
                     st.session_state.nfc_wc1_winner = row['WILDCARD4_WINNER']
                     st.session_state.nfc_wc2_winner = row['WILDCARD5_WINNER']
                     st.session_state.nfc_wc3_winner = row['WILDCARD6_WINNER']
-                    
-                    # Helper function to set checkbox states based on winner
-                    def set_checkbox_states(team1, team2, winner, key1, key2):
-                        st.session_state[key1] = (winner == team1)
-                        st.session_state[key2] = (winner == team2)
-                    
+                                       
                     # Divisional teams and winners
                     st.session_state.afc_div1_t1 = row['DIVISIONAL1_TEAM_1'] or ""
                     st.session_state.afc_div1_t2 = row['DIVISIONAL1_TEAM_2'] or ""
@@ -112,11 +117,36 @@ with btn_col1:
                     st.session_state.sb_team1 = row['SUPERBOWL_TEAM_1'] or ""
                     st.session_state.sb_team2 = row['SUPERBOWL_TEAM_2'] or ""
                     st.session_state.sb_winner = row['SUPERBOWL_WINNER']
+
+                    # Populate tiebreaker
+                    st.session_state.tiebreaker = int(row['TIE_BREAKER_POINTS']) if row['TIE_BREAKER_POINTS'] else 45
                     
-                    st.success("✅ Bracket loaded successfully!")
+                    with retrieve_col1:
+                        st.success("✅ Bracket loaded successfully!")
                     
             except Exception as e:
                 st.error(f"Error retrieving bracket: {e}")
+
+st.markdown("---")
+
+# Bracket Entry Form
+st.subheader("Enter/Edit Your Bracket")
+
+# Top section: Name, Email, Edit Key
+st.text_input("Name ", key="name", placeholder="Enter your full name and any additional info to make it a unique entry name")
+st.text_input("Email ", key="email", placeholder="flast@phdata.io")
+st.text_input("Edit Key ", key="edit_key", type="password", 
+                help="Create a secret key to edit your entry later. This along with your email uniquely identifies your entry, so make it different per entry.")
+
+# Clear Bracket button
+btn_col1, btn_col2 = st.columns(2)
+with btn_col1:
+    st.write("")  # Placeholder for symmetry
+
+# Clear Bracket button
+btn_col1, btn_col2 = st.columns(2)
+with btn_col1:
+    st.write("")  # Placeholder for symmetry
 
 with btn_col2:
     if st.button("Clear Bracket", type="primary", key="clear_bracket"):
