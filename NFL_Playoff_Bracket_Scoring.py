@@ -452,7 +452,7 @@ def main():
     e = read_entries_csv()
     a = get_actual()
     # print(a)
-    # score_entries(a, e)
+    score_entries(a, e)
     # print_entries(a)
     write_html_entries(e)
 
