@@ -1,6 +1,7 @@
 import streamlit as st
 from snowflake.snowpark.context import get_active_session
 import pandas as pd
+import streamlit.components.v1 as components
 
 # Get Snowflake session
 session = get_active_session()
@@ -52,7 +53,7 @@ with retrieve_col3:
     st.write("")  # Spacer for alignment
     if st.button("Retrieve", type="primary"):
         if not st.session_state.retrieve_email:
-            st.error("Please enter your email")
+            st.error("Please enter your phData employee email")
         elif not st.session_state.retrieve_key:
             st.error("Please enter your edit key")
         else:
@@ -134,7 +135,7 @@ st.subheader("Enter/Edit Your Bracket")
 
 # Top section: Name, Email, Edit Key
 st.text_input("Name ", key="name", placeholder="Enter your full name and any additional info to make it a unique entry name")
-st.text_input("Email ", key="email", placeholder="flast@phdata.io")
+st.text_input("phData employee email ", key="email", placeholder="flast@phdata.io")
 st.text_input("Edit Key ", key="edit_key", type="password", 
                 help="Create a secret key to edit your entry later. This along with your email uniquely identifies your entry, so make it different per entry.")
 
@@ -290,8 +291,18 @@ with st.container(border=True):
 
 st.markdown("---")
 
+# Submit and Print buttons
+submit_col1, submit_col2 = st.columns([1, 1])
+
 # Submit button
-if st.button("Submit Bracket", type="primary"):
+with submit_col1:
+    submit_clicked = st.button("Submit Bracket", type="primary")
+
+# Print button  
+with submit_col2:
+    print_clicked = st.button("Print Bracket", type="secondary")
+
+if submit_clicked:
     # st.write("🔍 DEBUG: Submit button clicked")
     
     # Validation
@@ -575,4 +586,267 @@ if st.button("Submit Bracket", type="primary"):
         # st.write(f"🔍 DEBUG: Exception details: {str(e)}")
         # import traceback
         # st.code(traceback.format_exc())
+
+
+# Handle Print Bracket button
+if print_clicked:
+    # Try to retrieve bracket data
+    if not st.session_state.email or not st.session_state.edit_key:
+        st.error("Please submit your bracket before printing.")
+    else:
+        try:
+            query = """
+                SELECT * FROM NFL_PLAYOFF_CONTEST.PROD.NFL_BRACKET_ENTRIES
+                WHERE PARTICIPANT_EMAIL = ?
+                AND EDIT_KEY = ?
+            """
+            result = session.sql(query, params=[
+                st.session_state.email,
+                st.session_state.edit_key
+            ]).collect()
+            
+            if len(result) == 0:
+                st.error("Please submit your bracket before printing.")
+            else:
+                row = result[0]
+                
+                # Generate HTML for printable bracket
+                html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NFL Playoff Bracket - {row['PARTICIPANT_NAME']}</title>
+    <style>
+        @media print {{
+            @page {{ margin: 0.5in; }}
+        }}
+        
+        body {{
+            font-family: Arial, sans-serif;
+            background-color: white;
+            margin: 20px;
+            color: #000;
+        }}
+        
+        h1 {{
+            text-align: center;
+            color: #003366;
+            margin-bottom: 10px;
+        }}
+        
+        .participant-info {{
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }}
+        
+        .bracket-container {{
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+        }}
+        
+        .conference {{
+            flex: 1;
+        }}
+        
+        .conference-title {{
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #003366;
+        }}
+        
+        .round {{
+            margin-bottom: 20px;
+        }}
+        
+        .round-title {{
+            font-weight: bold;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }}
+        
+        .matchup {{
+            border: 1px solid #ccc;
+            padding: 8px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }}
+        
+        .team {{
+            padding: 4px 0;
+            font-size: 13px;
+            text-align: center;
+        }}
+        
+        .vs {{
+            text-align: center;
+            color: #999;
+            font-size: 11px;
+            margin: 2px 0;
+        }}
+        
+        .super-bowl {{
+            margin-top: 30px;
+            text-align: center;
+        }}
+        
+        .super-bowl-title {{
+            font-size: 24px;
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 15px;
+        }}
+        
+        .super-bowl-matchup {{
+            border: 2px solid #003366;
+            padding: 15px;
+            margin: 0 auto;
+            max-width: 400px;
+            background-color: #f0f0f0;
+        }}
+        
+        .tiebreaker {{
+            text-align: center;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }}
+    </style>
+</head>
+<body>
+    <h1>🏈 NFL PLAYOFF BRACKET</h1>
+    <div class="participant-info">
+        <strong>{row['PARTICIPANT_NAME']}</strong>
+    </div>
+    
+    <div class="bracket-container">
+        <!-- AFC Conference -->
+        <div class="conference">
+            <div class="conference-title">AFC</div>
+            
+            <div class="round">
+                <div class="round-title">Wild Card Round</div>
+                <div class="matchup">
+                    <div class="team">{'<u>' + (row['WILDCARD1_TEAM_1'] or '') + '</u>' if row['WILDCARD1_TEAM_1'] == row['WILDCARD1_WINNER'] else (row['WILDCARD1_TEAM_1'] or '')}</div>
+                    <div class="vs">vs</div>
+                    <div class="team">{'<u>' + (row['WILDCARD1_TEAM_2'] or '') + '</u>' if row['WILDCARD1_TEAM_2'] == row['WILDCARD1_WINNER'] else (row['WILDCARD1_TEAM_2'] or '')}</div>
+                </div>
+                <div class="matchup">
+                    <div class="team">{'<u>' + (row['WILDCARD2_TEAM_1'] or '') + '</u>' if row['WILDCARD2_TEAM_1'] == row['WILDCARD2_WINNER'] else (row['WILDCARD2_TEAM_1'] or '')}</div>
+                    <div class="vs">vs</div>
+                    <div class="team">{'<u>' + (row['WILDCARD2_TEAM_2'] or '') + '</u>' if row['WILDCARD2_TEAM_2'] == row['WILDCARD2_WINNER'] else (row['WILDCARD2_TEAM_2'] or '')}</div>
+                </div>
+                <div class="matchup">
+                    <div class="team">{'<u>' + (row['WILDCARD3_TEAM_1'] or '') + '</u>' if row['WILDCARD3_TEAM_1'] == row['WILDCARD3_WINNER'] else (row['WILDCARD3_TEAM_1'] or '')}</div>
+                    <div class="vs">vs</div>
+                    <div class="team">{'<u>' + (row['WILDCARD3_TEAM_2'] or '') + '</u>' if row['WILDCARD3_TEAM_2'] == row['WILDCARD3_WINNER'] else (row['WILDCARD3_TEAM_2'] or '')}</div>
+                </div>
+            </div>
+            
+            <div class="round">
+                <div class="round-title">Divisional Round</div>
+                <div class="matchup">
+                    <div class="team">{'<u>' + (row['DIVISIONAL1_TEAM_1'] or '') + '</u>' if row['DIVISIONAL1_TEAM_1'] == row['DIVISIONAL1_WINNER'] else (row['DIVISIONAL1_TEAM_1'] or '')}</div>
+                    <div class="vs">vs</div>
+                    <div class="team">{'<u>' + (row['DIVISIONAL1_TEAM_2'] or '') + '</u>' if row['DIVISIONAL1_TEAM_2'] == row['DIVISIONAL1_WINNER'] else (row['DIVISIONAL1_TEAM_2'] or '')}</div>
+                </div>
+                <div class="matchup">
+                    <div class="team">{'<u>' + (row['DIVISIONAL2_TEAM_1'] or '') + '</u>' if row['DIVISIONAL2_TEAM_1'] == row['DIVISIONAL2_WINNER'] else (row['DIVISIONAL2_TEAM_1'] or '')}</div>
+                    <div class="vs">vs</div>
+                    <div class="team">{'<u>' + (row['DIVISIONAL2_TEAM_2'] or '') + '</u>' if row['DIVISIONAL2_TEAM_2'] == row['DIVISIONAL2_WINNER'] else (row['DIVISIONAL2_TEAM_2'] or '')}</div>
+                </div>
+            </div>
+            
+            <div class="round">
+                <div class="round-title">Conference Championship</div>
+                <div class="matchup">
+                    <div class="team">{'<u>' + (row['CONFERENCE1_TEAM_1'] or '') + '</u>' if row['CONFERENCE1_TEAM_1'] == row['CONFERENCE1_WINNER'] else (row['CONFERENCE1_TEAM_1'] or '')}</div>
+                    <div class="vs">vs</div>
+                    <div class="team">{'<u>' + (row['CONFERENCE1_TEAM_2'] or '') + '</u>' if row['CONFERENCE1_TEAM_2'] == row['CONFERENCE1_WINNER'] else (row['CONFERENCE1_TEAM_2'] or '')}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- NFC Conference -->
+        <div class="conference">
+            <div class="conference-title">NFC</div>
+            
+            <div class="round">
+                <div class="round-title">Wild Card Round</div>
+                <div class="matchup">
+                    <div class="team">{'<u>' + (row['WILDCARD4_TEAM_1'] or '') + '</u>' if row['WILDCARD4_TEAM_1'] == row['WILDCARD4_WINNER'] else (row['WILDCARD4_TEAM_1'] or '')}</div>
+                    <div class="vs">vs</div>
+                    <div class="team">{'<u>' + (row['WILDCARD4_TEAM_2'] or '') + '</u>' if row['WILDCARD4_TEAM_2'] == row['WILDCARD4_WINNER'] else (row['WILDCARD4_TEAM_2'] or '')}</div>
+                </div>
+                <div class="matchup">
+                    <div class="team">{'<u>' + (row['WILDCARD5_TEAM_1'] or '') + '</u>' if row['WILDCARD5_TEAM_1'] == row['WILDCARD5_WINNER'] else (row['WILDCARD5_TEAM_1'] or '')}</div>
+                    <div class="vs">vs</div>
+                    <div class="team">{'<u>' + (row['WILDCARD5_TEAM_2'] or '') + '</u>' if row['WILDCARD5_TEAM_2'] == row['WILDCARD5_WINNER'] else (row['WILDCARD5_TEAM_2'] or '')}</div>
+                </div>
+                <div class="matchup">
+                    <div class="team">{'<u>' + (row['WILDCARD6_TEAM_1'] or '') + '</u>' if row['WILDCARD6_TEAM_1'] == row['WILDCARD6_WINNER'] else (row['WILDCARD6_TEAM_1'] or '')}</div>
+                    <div class="vs">vs</div>
+                    <div class="team">{'<u>' + (row['WILDCARD6_TEAM_2'] or '') + '</u>' if row['WILDCARD6_TEAM_2'] == row['WILDCARD6_WINNER'] else (row['WILDCARD6_TEAM_2'] or '')}</div>
+                </div>
+            </div>
+            
+            <div class="round">
+                <div class="round-title">Divisional Round</div>
+                <div class="matchup">
+                    <div class="team">{'<u>' + (row['DIVISIONAL3_TEAM_1'] or '') + '</u>' if row['DIVISIONAL3_TEAM_1'] == row['DIVISIONAL3_WINNER'] else (row['DIVISIONAL3_TEAM_1'] or '')}</div>
+                    <div class="vs">vs</div>
+                    <div class="team">{'<u>' + (row['DIVISIONAL3_TEAM_2'] or '') + '</u>' if row['DIVISIONAL3_TEAM_2'] == row['DIVISIONAL3_WINNER'] else (row['DIVISIONAL3_TEAM_2'] or '')}</div>
+                </div>
+                <div class="matchup">
+                    <div class="team">{'<u>' + (row['DIVISIONAL4_TEAM_1'] or '') + '</u>' if row['DIVISIONAL4_TEAM_1'] == row['DIVISIONAL4_WINNER'] else (row['DIVISIONAL4_TEAM_1'] or '')}</div>
+                    <div class="vs">vs</div>
+                    <div class="team">{'<u>' + (row['DIVISIONAL4_TEAM_2'] or '') + '</u>' if row['DIVISIONAL4_TEAM_2'] == row['DIVISIONAL4_WINNER'] else (row['DIVISIONAL4_TEAM_2'] or '')}</div>
+                </div>
+            </div>
+            
+            <div class="round">
+                <div class="round-title">Conference Championship</div>
+                <div class="matchup">
+                    <div class="team">{'<u>' + (row['CONFERENCE2_TEAM_1'] or '') + '</u>' if row['CONFERENCE2_TEAM_1'] == row['CONFERENCE2_WINNER'] else (row['CONFERENCE2_TEAM_1'] or '')}</div>
+                    <div class="vs">vs</div>
+                    <div class="team">{'<u>' + (row['CONFERENCE2_TEAM_2'] or '') + '</u>' if row['CONFERENCE2_TEAM_2'] == row['CONFERENCE2_WINNER'] else (row['CONFERENCE2_TEAM_2'] or '')}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Super Bowl -->
+    <div class="super-bowl">
+        <div class="super-bowl-title">SUPER BOWL</div>
+        <div class="super-bowl-matchup">
+            <div class="team">{'<u>' + (row['SUPERBOWL_TEAM_1'] or '') + '</u>' if row['SUPERBOWL_TEAM_1'] == row['SUPERBOWL_WINNER'] else (row['SUPERBOWL_TEAM_1'] or '')}</div>
+            <div class="vs">vs</div>
+            <div class="team">{'<u>' + (row['SUPERBOWL_TEAM_2'] or '') + '</u>' if row['SUPERBOWL_TEAM_2'] == row['SUPERBOWL_WINNER'] else (row['SUPERBOWL_TEAM_2'] or '')}</div>
+        </div>
+        <div class="tiebreaker">Tiebreaker: {row['TIE_BREAKER_POINTS']} total points</div>
+    </div>
+    
+    <script>
+        // Auto-print when page loads
+        window.onload = function() {{
+            window.print();
+        }}
+    </script>
+</body>
+</html>
+"""
+                
+                # Display the HTML in an iframe for printing
+                st.success("✅ Opening print preview...")
+                components.html(html, height=800, scrolling=True)
+                
+        except Exception as e:
+            st.error(f"Error retrieving bracket for printing: {e}")
 
